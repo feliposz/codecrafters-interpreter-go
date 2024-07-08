@@ -27,6 +27,7 @@ const (
 	LESS_EQUAL
 	GREATER
 	GREATER_EQUAL
+	SLASH
 )
 
 func (tt TokenType) String() string {
@@ -67,6 +68,8 @@ func (tt TokenType) String() string {
 		return "GREATER"
 	case GREATER_EQUAL:
 		return "GREATER_EQUAL"
+	case SLASH:
+		return "SLASH"
 	}
 	return "UNKNOWN"
 }
@@ -146,6 +149,14 @@ func main() {
 				tt = GREATER_EQUAL
 				tokenStr = fileContents[i : i+2]
 				i++
+			}
+		case '/':
+			tt = SLASH
+			if i+1 < len(fileContents) && fileContents[i+1] == '/' {
+				tt = UNKNOWN
+				for i < len(fileContents) && fileContents[i] != '\n' {
+					i++
+				}
 			}
 		case '\n':
 			line++
