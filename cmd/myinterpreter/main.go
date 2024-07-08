@@ -164,6 +164,9 @@ func main() {
 				for i < len(fileContents) && fileContents[i] != '\n' {
 					i++
 				}
+				if i < len(fileContents) && fileContents[i] == '\n' {
+					line++
+				}
 			}
 		default:
 			fmt.Fprintf(os.Stderr, "[line %d] Error: Unexpected character: %c\n", line, ch)
