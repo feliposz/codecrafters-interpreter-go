@@ -28,6 +28,7 @@ const (
 	GREATER
 	GREATER_EQUAL
 	SLASH
+	STRING
 )
 
 func (tt TokenType) String() string {
@@ -70,6 +71,8 @@ func (tt TokenType) String() string {
 		return "GREATER_EQUAL"
 	case SLASH:
 		return "SLASH"
+	case STRING:
+		return "STRING"
 	}
 	return "UNKNOWN"
 }
@@ -100,6 +103,7 @@ func main() {
 	lexicalErrors := false
 	for i := 0; i < len(fileContents); i++ {
 		ch := fileContents[i]
+		contentStr := "null"
 		if ch == ' ' || ch == '\t' {
 			continue
 		}
@@ -168,13 +172,28 @@ func main() {
 					line++
 				}
 			}
+		case '"':
+			j := i + 1
+			for j < len(fileContents) && fileContents[j] != '"' && fileContents[j] != '\n' {
+				j++
+			}
+			if j < len(fileContents) && fileContents[j] == '"' {
+				tt = STRING
+				tokenStr = fileContents[i : j+1]
+				contentStr = string(fileContents[i+1 : j])
+			} else {
+				fmt.Fprintf(os.Stderr, "[line %d] Error: Unterminated string.\n", line)
+				tt = UNKNOWN
+				lexicalErrors = true
+			}
+			i = j
 		default:
 			fmt.Fprintf(os.Stderr, "[line %d] Error: Unexpected character: %c\n", line, ch)
 			tt = UNKNOWN
 			lexicalErrors = true
 		}
 		if tt != UNKNOWN {
-			fmt.Printf("%v %s null\n", tt, tokenStr)
+			fmt.Printf("%v %s %s\n", tt, tokenStr, contentStr)
 		}
 	}
 	fmt.Println("EOF  null")
