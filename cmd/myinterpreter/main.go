@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
-	"unicode"
+	"strconv"
 )
 
 type TokenType uint8
@@ -31,6 +31,8 @@ const (
 	SLASH
 	STRING
 	NUMBER
+	IDENTIFIER
+	COMMENT
 )
 
 func (tt TokenType) String() string {
@@ -77,6 +79,10 @@ func (tt TokenType) String() string {
 		return "STRING"
 	case NUMBER:
 		return "NUMBER"
+	case IDENTIFIER:
+		return "IDENTIFIER"
+	case COMMENT:
+		return "COMMENT"
 	}
 	return "UNKNOWN"
 }
@@ -111,7 +117,7 @@ func tokenizer(fileContents []byte) {
 	lexicalErrors := false
 	for i := 0; i < len(fileContents); i++ {
 		ch := fileContents[i]
-		contentStr := "null"
+		var content any = "null"
 		if ch == ' ' || ch == '\t' {
 			continue
 		}
@@ -137,9 +143,9 @@ func tokenizer(fileContents []byte) {
 			tt = NUMBER
 			j := i
 			hasDot := false
-			for j < len(fileContents) && (fileContents[j] == '.' || unicode.IsDigit(rune(fileContents[j]))) {
+			for j < len(fileContents) && (fileContents[j] == '.' || isDigit(fileContents[j])) {
 				if fileContents[j] == '.' {
-					if j+1 >= len(fileContents) || !unicode.IsDigit(rune(fileContents[j+1])) {
+					if j+1 >= len(fileContents) || !isDigit(fileContents[j+1]) {
 						break
 					}
 					if hasDot {
@@ -155,10 +161,7 @@ func tokenizer(fileContents []byte) {
 			}
 			tokenStr = fileContents[i : j+1]
 			i = j
-			contentStr = string(tokenStr)
-			if !hasDot {
-				contentStr += ".0"
-			}
+			content, _ = strconv.ParseFloat(string(tokenStr), 64)
 		case '-':
 			tt = MINUS
 		case '+':
@@ -198,7 +201,7 @@ func tokenizer(fileContents []byte) {
 		case '/':
 			tt = SLASH
 			if i+1 < len(fileContents) && fileContents[i+1] == '/' {
-				tt = UNKNOWN
+				tt = COMMENT
 				for i < len(fileContents) && fileContents[i] != '\n' {
 					i++
 				}
@@ -214,7 +217,7 @@ func tokenizer(fileContents []byte) {
 			if j < len(fileContents) && fileContents[j] == '"' {
 				tt = STRING
 				tokenStr = fileContents[i : j+1]
-				contentStr = string(fileContents[i+1 : j])
+				content = string(fileContents[i+1 : j])
 			} else {
 				fmt.Fprintf(os.Stderr, "[line %d] Error: Unterminated string.\n", line)
 				tt = UNKNOWN
@@ -222,16 +225,49 @@ func tokenizer(fileContents []byte) {
 			}
 			i = j
 		default:
-			fmt.Fprintf(os.Stderr, "[line %d] Error: Unexpected character: %c\n", line, ch)
-			tt = UNKNOWN
-			lexicalErrors = true
+			if ch == '_' || isLetter(ch) {
+				tt = IDENTIFIER
+				j := i
+				for j < len(fileContents) && (fileContents[j] == '_' || isLetter(fileContents[j]) || isDigit(fileContents[j])) {
+					j++
+				}
+				if j <= len(fileContents) {
+					j--
+				}
+				tokenStr = fileContents[i : j+1]
+				i = j
+			} else {
+				fmt.Fprintf(os.Stderr, "[line %d] Error: Unexpected character: %c\n", line, ch)
+				tt = UNKNOWN
+				lexicalErrors = true
+			}
 		}
-		if tt != UNKNOWN {
-			fmt.Printf("%v %s %s\n", tt, tokenStr, contentStr)
+		switch tt {
+		case STRING:
+			fmt.Printf("%v %s %s\n", tt, tokenStr, content)
+		case NUMBER:
+			value, _ := content.(float64)
+			if value == float64(int(value)) {
+				fmt.Printf("%v %s %.1f\n", tt, tokenStr, value)
+			} else {
+				fmt.Printf("%v %s %g\n", tt, tokenStr, value)
+			}
+		case COMMENT, UNKNOWN:
+			// ignore
+		default:
+			fmt.Printf("%v %s null\n", tt, tokenStr)
 		}
 	}
 	fmt.Println("EOF  null")
 	if lexicalErrors {
 		os.Exit(65)
 	}
+}
+
+func isLetter(ch byte) bool {
+	return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')
+}
+
+func isDigit(ch byte) bool {
+	return ch >= '0' && ch <= '9'
 }
