@@ -23,6 +23,10 @@ const (
 	EQUAL_EQUAL
 	BANG
 	BANG_EQUAL
+	LESS
+	LESS_EQUAL
+	GREATER
+	GREATER_EQUAL
 )
 
 func (tt TokenType) String() string {
@@ -55,6 +59,14 @@ func (tt TokenType) String() string {
 		return "BANG"
 	case BANG_EQUAL:
 		return "BANG_EQUAL"
+	case LESS:
+		return "LESS"
+	case LESS_EQUAL:
+		return "LESS_EQUAL"
+	case GREATER:
+		return "GREATER"
+	case GREATER_EQUAL:
+		return "GREATER_EQUAL"
 	}
 	return "UNKNOWN"
 }
@@ -118,6 +130,20 @@ func main() {
 			tt = BANG
 			if i+1 < len(fileContents) && fileContents[i+1] == '=' {
 				tt = BANG_EQUAL
+				tokenStr = fileContents[i : i+2]
+				i++
+			}
+		case '<':
+			tt = LESS
+			if i+1 < len(fileContents) && fileContents[i+1] == '=' {
+				tt = LESS_EQUAL
+				tokenStr = fileContents[i : i+2]
+				i++
+			}
+		case '>':
+			tt = GREATER
+			if i+1 < len(fileContents) && fileContents[i+1] == '=' {
+				tt = GREATER_EQUAL
 				tokenStr = fileContents[i : i+2]
 				i++
 			}
