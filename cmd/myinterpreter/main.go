@@ -21,6 +21,8 @@ const (
 	STAR
 	EQUAL
 	EQUAL_EQUAL
+	BANG
+	BANG_EQUAL
 )
 
 func (tt TokenType) String() string {
@@ -49,6 +51,10 @@ func (tt TokenType) String() string {
 		return "EQUAL"
 	case EQUAL_EQUAL:
 		return "EQUAL_EQUAL"
+	case BANG:
+		return "BANG"
+	case BANG_EQUAL:
+		return "BANG_EQUAL"
 	}
 	return "UNKNOWN"
 }
@@ -105,6 +111,13 @@ func main() {
 			tt = EQUAL
 			if i+1 < len(fileContents) && fileContents[i+1] == '=' {
 				tt = EQUAL_EQUAL
+				tokenStr = fileContents[i : i+2]
+				i++
+			}
+		case '!':
+			tt = BANG
+			if i+1 < len(fileContents) && fileContents[i+1] == '=' {
+				tt = BANG_EQUAL
 				tokenStr = fileContents[i : i+2]
 				i++
 			}
