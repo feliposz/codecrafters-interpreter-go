@@ -8,7 +8,7 @@ import (
 type TokenType uint8
 
 const (
-	None TokenType = iota
+	UNKNOWN TokenType = iota
 	LEFT_PAREN
 	RIGHT_PAREN
 	LEFT_BRACE
@@ -67,7 +67,9 @@ func main() {
 		os.Exit(1)
 	}
 
+	line := 1
 	var tt TokenType
+	lexicalErrors := false
 	for _, ch := range fileContents {
 		switch ch {
 		case '(':
@@ -90,8 +92,19 @@ func main() {
 			tt = SEMICOLON
 		case '*':
 			tt = STAR
+		case '\n':
+			line++
+		default:
+			fmt.Fprintf(os.Stderr, "[line %d] Error: Unexpected character: %c\n", line, ch)
+			tt = UNKNOWN
+			lexicalErrors = true
 		}
-		fmt.Printf("%v %c null\n", tt, ch)
+		if tt != UNKNOWN {
+			fmt.Printf("%v %c null\n", tt, ch)
+		}
 	}
 	fmt.Println("EOF  null")
+	if lexicalErrors {
+		os.Exit(65)
+	}
 }
