@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"unicode"
 )
 
 type TokenType uint8
@@ -29,6 +30,7 @@ const (
 	GREATER_EQUAL
 	SLASH
 	STRING
+	NUMBER
 )
 
 func (tt TokenType) String() string {
@@ -73,6 +75,8 @@ func (tt TokenType) String() string {
 		return "SLASH"
 	case STRING:
 		return "STRING"
+	case NUMBER:
+		return "NUMBER"
 	}
 	return "UNKNOWN"
 }
@@ -97,6 +101,10 @@ func main() {
 		os.Exit(1)
 	}
 
+	tokenizer(fileContents)
+}
+
+func tokenizer(fileContents []byte) {
 	line := 1
 	var tt TokenType
 	var tokenStr []byte
@@ -125,6 +133,32 @@ func main() {
 			tt = COMMA
 		case '.':
 			tt = DOT
+		case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+			tt = NUMBER
+			j := i
+			hasDot := false
+			for j < len(fileContents) && (fileContents[j] == '.' || unicode.IsDigit(rune(fileContents[j]))) {
+				if fileContents[j] == '.' {
+					if j+1 >= len(fileContents) || !unicode.IsDigit(rune(fileContents[j+1])) {
+						break
+					}
+					if hasDot {
+						break
+					} else {
+						hasDot = true
+					}
+				}
+				j++
+			}
+			if j <= len(fileContents) {
+				j--
+			}
+			tokenStr = fileContents[i : j+1]
+			i = j
+			contentStr = string(tokenStr)
+			if !hasDot {
+				contentStr += ".0"
+			}
 		case '-':
 			tt = MINUS
 		case '+':
