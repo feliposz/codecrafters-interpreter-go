@@ -33,6 +33,22 @@ const (
 	NUMBER
 	IDENTIFIER
 	COMMENT
+	AND
+	CLASS
+	ELSE
+	FALSE
+	FOR
+	FUN
+	IF
+	NIL
+	OR
+	PRINT
+	RETURN
+	SUPER
+	THIS
+	TRUE
+	VAR
+	WHILE
 )
 
 func (tt TokenType) String() string {
@@ -83,8 +99,59 @@ func (tt TokenType) String() string {
 		return "IDENTIFIER"
 	case COMMENT:
 		return "COMMENT"
+	case AND:
+		return "AND"
+	case CLASS:
+		return "CLASS"
+	case ELSE:
+		return "ELSE"
+	case FALSE:
+		return "FALSE"
+	case FOR:
+		return "FOR"
+	case FUN:
+		return "FUN"
+	case IF:
+		return "IF"
+	case NIL:
+		return "NIL"
+	case OR:
+		return "OR"
+	case PRINT:
+		return "PRINT"
+	case RETURN:
+		return "RETURN"
+	case SUPER:
+		return "SUPER"
+	case THIS:
+		return "THIS"
+	case TRUE:
+		return "TRUE"
+	case VAR:
+		return "VAR"
+	case WHILE:
+		return "WHILE"
 	}
 	return "UNKNOWN"
+}
+
+var reservedKeywords = map[string]TokenType{
+	"and":    AND,
+	"class":  CLASS,
+	"else":   ELSE,
+	"false":  FALSE,
+	"for":    FOR,
+	"fun":    FUN,
+	"if":     IF,
+	"nil":    NIL,
+	"or":     OR,
+	"print":  PRINT,
+	"return": RETURN,
+	"super":  SUPER,
+	"this":   THIS,
+	"true":   TRUE,
+	"var":    VAR,
+	"while":  WHILE,
 }
 
 func main() {
@@ -236,6 +303,9 @@ func tokenizer(fileContents []byte) {
 				}
 				tokenStr = fileContents[i : j+1]
 				i = j
+				if kwType, found := reservedKeywords[string(tokenStr)]; found {
+					tt = kwType
+				}
 			} else {
 				fmt.Fprintf(os.Stderr, "[line %d] Error: Unexpected character: %c\n", line, ch)
 				tt = UNKNOWN
