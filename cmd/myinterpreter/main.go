@@ -19,6 +19,8 @@ const (
 	PLUS
 	SEMICOLON
 	STAR
+	EQUAL
+	EQUAL_EQUAL
 )
 
 func (tt TokenType) String() string {
@@ -43,8 +45,12 @@ func (tt TokenType) String() string {
 		return "SEMICOLON"
 	case STAR:
 		return "STAR"
+	case EQUAL:
+		return "EQUAL"
+	case EQUAL_EQUAL:
+		return "EQUAL_EQUAL"
 	}
-	return "unknown"
+	return "UNKNOWN"
 }
 
 func main() {
@@ -69,8 +75,11 @@ func main() {
 
 	line := 1
 	var tt TokenType
+	var tokenStr []byte
 	lexicalErrors := false
-	for _, ch := range fileContents {
+	for i := 0; i < len(fileContents); i++ {
+		ch := fileContents[i]
+		tokenStr = fileContents[i : i+1]
 		switch ch {
 		case '(':
 			tt = LEFT_PAREN
@@ -92,6 +101,13 @@ func main() {
 			tt = SEMICOLON
 		case '*':
 			tt = STAR
+		case '=':
+			tt = EQUAL
+			if i+1 < len(fileContents) && fileContents[i+1] == '=' {
+				tt = EQUAL_EQUAL
+				tokenStr = fileContents[i : i+2]
+				i++
+			}
 		case '\n':
 			line++
 		default:
@@ -100,7 +116,7 @@ func main() {
 			lexicalErrors = true
 		}
 		if tt != UNKNOWN {
-			fmt.Printf("%v %c null\n", tt, ch)
+			fmt.Printf("%v %s null\n", tt, tokenStr)
 		}
 	}
 	fmt.Println("EOF  null")
