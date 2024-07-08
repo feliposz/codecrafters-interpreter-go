@@ -100,6 +100,13 @@ func main() {
 	lexicalErrors := false
 	for i := 0; i < len(fileContents); i++ {
 		ch := fileContents[i]
+		if ch == ' ' || ch == '\t' {
+			continue
+		}
+		if ch == '\n' {
+			line++
+			continue
+		}
 		tokenStr = fileContents[i : i+1]
 		switch ch {
 		case '(':
@@ -158,8 +165,6 @@ func main() {
 					i++
 				}
 			}
-		case '\n':
-			line++
 		default:
 			fmt.Fprintf(os.Stderr, "[line %d] Error: Unexpected character: %c\n", line, ch)
 			tt = UNKNOWN
