@@ -18,6 +18,8 @@ func (l *Literal) String() string {
 		return "false"
 	case NUMBER:
 		return FloatFormat(l.token.Content.(float64))
+	case STRING:
+		return l.token.Content.(string)
 	}
 	return "?"
 }
