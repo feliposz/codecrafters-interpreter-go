@@ -158,9 +158,32 @@ var reservedKeywords = map[string]TokenType{
 }
 
 type Token struct {
-	Type   TokenType
-	String string
-	Line   int
+	Type    TokenType
+	Str     string
+	Content any
+	Line    int
+}
+
+func (t Token) String() string {
+	switch t.Type {
+	case STRING:
+		return fmt.Sprintf("%v %s %s", t.Type, t.Str, t.Content)
+	case NUMBER:
+		value, _ := t.Content.(float64)
+		return fmt.Sprintf("%v %s %s", t.Type, t.Str, FloatFormat(value))
+	case COMMENT, UNKNOWN:
+		return ""
+	default:
+		return fmt.Sprintf("%v %s null", t.Type, t.Str)
+	}
+}
+
+func FloatFormat(value float64) string {
+	if value == float64(int(value)) {
+		return fmt.Sprintf("%.1f", value)
+	} else {
+		return fmt.Sprintf("%g", value)
+	}
 }
 
 func tokenizer(fileContents []byte, print bool) []Token {
@@ -299,36 +322,29 @@ func tokenizer(fileContents []byte, print bool) []Token {
 				lexicalErrors = true
 			}
 		}
-		if print {
-			switch tt {
-			case STRING:
-				fmt.Printf("%v %s %s\n", tt, tokenStr, content)
-			case NUMBER:
-				value, _ := content.(float64)
-				if value == float64(int(value)) {
-					fmt.Printf("%v %s %.1f\n", tt, tokenStr, value)
-				} else {
-					fmt.Printf("%v %s %g\n", tt, tokenStr, value)
-				}
-			case COMMENT, UNKNOWN:
-				// ignore
-			default:
-				fmt.Printf("%v %s null\n", tt, tokenStr)
-			}
+		if tt == UNKNOWN || tt == COMMENT {
+			continue
 		}
-		result = append(result, Token{
+		token := Token{
 			tt,
 			string(tokenStr),
+			content,
 			line,
-		})
+		}
+		result = append(result, token)
+		if print {
+			fmt.Println(token)
+		}
 	}
-	result = append(result, Token{
+	eofToken := Token{
 		EOF,
 		"",
+		"",
 		line,
-	})
+	}
+	result = append(result, eofToken)
 	if print {
-		fmt.Println("EOF  null")
+		fmt.Println(eofToken)
 	}
 	if lexicalErrors {
 		os.Exit(65)

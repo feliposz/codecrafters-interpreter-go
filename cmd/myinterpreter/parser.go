@@ -50,7 +50,7 @@ func (p *Parser) parse() Expr {
 }
 
 func (p *Parser) primary() Expr {
-	if p.match(NIL, TRUE, FALSE) {
+	if p.match(NIL, TRUE, FALSE, NUMBER) {
 		return &Literal{p.previous()}
 	}
 	return nil
