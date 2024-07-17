@@ -57,7 +57,7 @@ func (p *Parser) parse() Expr {
 }
 
 func (p *Parser) expression() Expr {
-	return p.term()
+	return p.comparison()
 }
 
 func (p *Parser) primary() Expr {
@@ -99,6 +99,16 @@ func (p *Parser) term() Expr {
 	for p.match(PLUS, MINUS) {
 		op := p.previous()
 		right := p.factor()
+		left = &Binary{op, left, right}
+	}
+	return left
+}
+
+func (p *Parser) comparison() Expr {
+	left := p.term()
+	for p.match(LESS, GREATER, LESS_EQUAL, GREATER_EQUAL) {
+		op := p.previous()
+		right := p.term()
 		left = &Binary{op, left, right}
 	}
 	return left

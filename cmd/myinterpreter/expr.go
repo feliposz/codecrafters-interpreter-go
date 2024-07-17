@@ -64,6 +64,14 @@ func (u *Binary) String() string {
 		op = "*"
 	case SLASH:
 		op = "/"
+	case LESS:
+		op = "<"
+	case GREATER:
+		op = ">"
+	case LESS_EQUAL:
+		op = "<="
+	case GREATER_EQUAL:
+		op = ">="
 	}
 	return fmt.Sprintf("(%s %s %s)", op, u.Left.String(), u.Right.String())
 }
