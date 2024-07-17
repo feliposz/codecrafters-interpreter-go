@@ -72,6 +72,10 @@ func (u *Binary) String() string {
 		op = "<="
 	case GREATER_EQUAL:
 		op = ">="
+	case EQUAL_EQUAL:
+		op = "=="
+	case BANG_EQUAL:
+		op = "!="
 	}
 	return fmt.Sprintf("(%s %s %s)", op, u.Left.String(), u.Right.String())
 }
