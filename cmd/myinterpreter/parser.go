@@ -57,7 +57,7 @@ func (p *Parser) parse() Expr {
 }
 
 func (p *Parser) expression() Expr {
-	return p.factor()
+	return p.term()
 }
 
 func (p *Parser) primary() Expr {
@@ -89,6 +89,16 @@ func (p *Parser) factor() Expr {
 	for p.match(STAR, SLASH) {
 		op := p.previous()
 		right := p.unary()
+		left = &Binary{op, left, right}
+	}
+	return left
+}
+
+func (p *Parser) term() Expr {
+	left := p.factor()
+	for p.match(PLUS, MINUS) {
+		op := p.previous()
+		right := p.factor()
 		left = &Binary{op, left, right}
 	}
 	return left
