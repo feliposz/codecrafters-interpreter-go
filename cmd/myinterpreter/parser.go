@@ -72,6 +72,7 @@ func (p *Parser) primary() Expr {
 		p.consume(RIGHT_PAREN, "Expect ')' after expression.")
 		return &Grouping{expr}
 	}
+	loxError(p.peek(), "Expected expression.")
 	return nil
 }
 
