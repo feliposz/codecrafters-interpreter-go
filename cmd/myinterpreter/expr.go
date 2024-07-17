@@ -46,3 +46,24 @@ func (u *Unary) String() string {
 		return fmt.Sprintf("(! %s)", u.Expr.String())
 	}
 }
+
+type Binary struct {
+	Op    *Token
+	Left  Expr
+	Right Expr
+}
+
+func (u *Binary) String() string {
+	op := "?"
+	switch u.Op.Type {
+	case PLUS:
+		op = "+"
+	case MINUS:
+		op = "-"
+	case STAR:
+		op = "*"
+	case SLASH:
+		op = "/"
+	}
+	return fmt.Sprintf("(%s %s %s)", op, u.Left.String(), u.Right.String())
+}

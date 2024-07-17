@@ -57,7 +57,7 @@ func (p *Parser) parse() Expr {
 }
 
 func (p *Parser) expression() Expr {
-	return p.unary()
+	return p.factor()
 }
 
 func (p *Parser) primary() Expr {
@@ -82,4 +82,14 @@ func (p *Parser) unary() Expr {
 		return &Unary{op, expr}
 	}
 	return p.primary()
+}
+
+func (p *Parser) factor() Expr {
+	left := p.unary()
+	for p.match(STAR, SLASH) {
+		op := p.previous()
+		right := p.unary()
+		left = &Binary{op, left, right}
+	}
+	return left
 }
