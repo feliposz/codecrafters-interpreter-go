@@ -57,7 +57,7 @@ func (p *Parser) parse() Expr {
 }
 
 func (p *Parser) expression() Expr {
-	return p.primary()
+	return p.unary()
 }
 
 func (p *Parser) primary() Expr {
@@ -73,4 +73,13 @@ func (p *Parser) primary() Expr {
 		return &Grouping{expr}
 	}
 	return nil
+}
+
+func (p *Parser) unary() Expr {
+	if p.match(MINUS, BANG) {
+		op := p.previous()
+		expr := p.unary()
+		return &Unary{op, expr}
+	}
+	return p.primary()
 }

@@ -10,10 +10,6 @@ type Literal struct {
 	token *Token
 }
 
-type Grouping struct {
-	expr Expr
-}
-
 func (l *Literal) String() string {
 	switch l.token.Type {
 	case NIL:
@@ -30,6 +26,23 @@ func (l *Literal) String() string {
 	return "?"
 }
 
+type Grouping struct {
+	expr Expr
+}
+
 func (g *Grouping) String() string {
 	return fmt.Sprintf("(group %s)", g.expr.String())
+}
+
+type Unary struct {
+	Op   *Token
+	Expr Expr
+}
+
+func (u *Unary) String() string {
+	if u.Op.Type == MINUS {
+		return fmt.Sprintf("(- %s)", u.Expr.String())
+	} else {
+		return fmt.Sprintf("(! %s)", u.Expr.String())
+	}
 }
