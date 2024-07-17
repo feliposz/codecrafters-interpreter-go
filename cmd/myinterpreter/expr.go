@@ -1,11 +1,17 @@
 package main
 
+import "fmt"
+
 type Expr interface {
 	String() string
 }
 
 type Literal struct {
 	token *Token
+}
+
+type Grouping struct {
+	expr Expr
 }
 
 func (l *Literal) String() string {
@@ -22,4 +28,8 @@ func (l *Literal) String() string {
 		return l.token.Content.(string)
 	}
 	return "?"
+}
+
+func (g *Grouping) String() string {
+	return fmt.Sprintf("(group %s)", g.expr.String())
 }

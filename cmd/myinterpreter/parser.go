@@ -45,13 +45,32 @@ func (p *Parser) match(types ...TokenType) bool {
 	return false
 }
 
+func (p *Parser) consume(t TokenType, msg string) {
+	if !p.check(t) {
+		loxError(p.peek(), msg)
+	}
+	p.advance()
+}
+
 func (p *Parser) parse() Expr {
+	return p.expression()
+}
+
+func (p *Parser) expression() Expr {
 	return p.primary()
 }
 
 func (p *Parser) primary() Expr {
 	if p.match(NIL, TRUE, FALSE, NUMBER, STRING) {
 		return &Literal{p.previous()}
+	}
+	if p.match(LEFT_PAREN) {
+		expr := p.expression()
+		if expr == nil {
+			loxError(p.peek(), "Expected expression.")
+		}
+		p.consume(RIGHT_PAREN, "Expect ')' after expression.")
+		return &Grouping{expr}
 	}
 	return nil
 }
