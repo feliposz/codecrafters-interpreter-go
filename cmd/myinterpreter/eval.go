@@ -25,7 +25,11 @@ func (u *Unary) Evaluate() any {
 	value := u.Expr.Evaluate()
 	switch u.Op.Type {
 	case MINUS:
-		return -value.(float64)
+		switch value := value.(type) {
+		case float64:
+			return -value
+		}
+		runtimeError("Operand must be a number.")
 	case BANG:
 		if value == nil || value == false {
 			return true
