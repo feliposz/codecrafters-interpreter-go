@@ -18,8 +18,7 @@ func (l *Literal) Evaluate() any {
 }
 
 func (g *Grouping) Evaluate() any {
-	loxError(g.token, "not implemented")
-	return nil
+	return g.expr.Evaluate()
 }
 
 func (u *Unary) Evaluate() any {
