@@ -59,9 +59,23 @@ func (b *Binary) Evaluate() any {
 	case MINUS:
 		return left.(float64) - right.(float64)
 	case STAR:
-		return left.(float64) * right.(float64)
+		switch left := left.(type) {
+		case float64:
+			switch right := right.(type) {
+			case float64:
+				return left * right
+			}
+		}
+		runtimeError("Operand must be a number.")
 	case SLASH:
-		return left.(float64) / right.(float64)
+		switch left := left.(type) {
+		case float64:
+			switch right := right.(type) {
+			case float64:
+				return left / right
+			}
+		}
+		runtimeError("Operand must be a number.")
 	case LESS:
 		return left.(float64) < right.(float64)
 	case GREATER:
