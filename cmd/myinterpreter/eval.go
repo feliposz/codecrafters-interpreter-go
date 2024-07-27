@@ -40,7 +40,18 @@ func (b *Binary) Evaluate() any {
 	left, right := b.Left.Evaluate(), b.Right.Evaluate()
 	switch b.Op.Type {
 	case PLUS:
-		return left.(float64) + right.(float64)
+		switch left := left.(type) {
+		case string:
+			switch right := right.(type) {
+			case string:
+				return left + right
+			}
+		case float64:
+			switch right := right.(type) {
+			case float64:
+				return left + right
+			}
+		}
 	case MINUS:
 		return left.(float64) - right.(float64)
 	case STAR:
