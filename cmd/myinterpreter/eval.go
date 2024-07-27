@@ -58,6 +58,14 @@ func (b *Binary) Evaluate() any {
 		return left.(float64) * right.(float64)
 	case SLASH:
 		return left.(float64) / right.(float64)
+	case LESS:
+		return left.(float64) < right.(float64)
+	case GREATER:
+		return left.(float64) > right.(float64)
+	case LESS_EQUAL:
+		return left.(float64) <= right.(float64)
+	case GREATER_EQUAL:
+		return left.(float64) >= right.(float64)
 	}
 	loxError(b.Op, "not implemented")
 	return nil
