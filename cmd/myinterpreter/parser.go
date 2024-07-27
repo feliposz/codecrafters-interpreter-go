@@ -65,12 +65,13 @@ func (p *Parser) primary() Expr {
 		return &Literal{p.previous()}
 	}
 	if p.match(LEFT_PAREN) {
+		paren := p.previous()
 		expr := p.expression()
 		if expr == nil {
 			loxError(p.peek(), "Expected expression.")
 		}
 		p.consume(RIGHT_PAREN, "Expect ')' after expression.")
-		return &Grouping{expr}
+		return &Grouping{paren, expr}
 	}
 	loxError(p.peek(), "Expected expression.")
 	return nil

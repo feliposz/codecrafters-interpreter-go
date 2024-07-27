@@ -4,6 +4,7 @@ import "fmt"
 
 type Expr interface {
 	String() string
+	Evaluate() any
 }
 
 type Literal struct {
@@ -27,7 +28,8 @@ func (l *Literal) String() string {
 }
 
 type Grouping struct {
-	expr Expr
+	token *Token
+	expr  Expr
 }
 
 func (g *Grouping) String() string {

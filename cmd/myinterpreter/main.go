@@ -28,6 +28,12 @@ func main() {
 		parser := NewParser(tokens)
 		expr := parser.parse()
 		fmt.Println(expr)
+	case "evaluate":
+		tokens := tokenizer(fileContents, false)
+		parser := NewParser(tokens)
+		expr := parser.parse()
+		result := expr.Evaluate()
+		fmt.Println(result)
 	default:
 		fmt.Fprintf(os.Stderr, "Unknown command: %s\n", command)
 		os.Exit(1)
