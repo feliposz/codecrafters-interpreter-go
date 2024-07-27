@@ -39,6 +39,10 @@ func (u *Unary) Evaluate() any {
 func (b *Binary) Evaluate() any {
 	left, right := b.Left.Evaluate(), b.Right.Evaluate()
 	switch b.Op.Type {
+	case PLUS:
+		return left.(float64) + right.(float64)
+	case MINUS:
+		return left.(float64) - right.(float64)
 	case STAR:
 		return left.(float64) * right.(float64)
 	case SLASH:
