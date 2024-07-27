@@ -85,13 +85,41 @@ func (b *Binary) Evaluate() any {
 		}
 		runtimeError("Operands must be numbers.")
 	case LESS:
-		return left.(float64) < right.(float64)
+		switch left := left.(type) {
+		case float64:
+			switch right := right.(type) {
+			case float64:
+				return left < right
+			}
+		}
+		runtimeError("Operands must be numbers.")
 	case GREATER:
-		return left.(float64) > right.(float64)
+		switch left := left.(type) {
+		case float64:
+			switch right := right.(type) {
+			case float64:
+				return left > right
+			}
+		}
+		runtimeError("Operands must be numbers.")
 	case LESS_EQUAL:
-		return left.(float64) <= right.(float64)
+		switch left := left.(type) {
+		case float64:
+			switch right := right.(type) {
+			case float64:
+				return left <= right
+			}
+		}
+		runtimeError("Operands must be numbers.")
 	case GREATER_EQUAL:
-		return left.(float64) >= right.(float64)
+		switch left := left.(type) {
+		case float64:
+			switch right := right.(type) {
+			case float64:
+				return left >= right
+			}
+		}
+		runtimeError("Operands must be numbers.")
 	case EQUAL_EQUAL:
 		return left == right
 	case BANG_EQUAL:
