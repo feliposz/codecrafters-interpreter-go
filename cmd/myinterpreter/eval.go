@@ -56,8 +56,16 @@ func (b *Binary) Evaluate() any {
 				return left + right
 			}
 		}
+		runtimeError("Operands must be two numbers or two strings.")
 	case MINUS:
-		return left.(float64) - right.(float64)
+		switch left := left.(type) {
+		case float64:
+			switch right := right.(type) {
+			case float64:
+				return left - right
+			}
+		}
+		runtimeError("Operands must be numbers.")
 	case STAR:
 		switch left := left.(type) {
 		case float64:
@@ -66,7 +74,7 @@ func (b *Binary) Evaluate() any {
 				return left * right
 			}
 		}
-		runtimeError("Operand must be a number.")
+		runtimeError("Operands must be numbers.")
 	case SLASH:
 		switch left := left.(type) {
 		case float64:
@@ -75,7 +83,7 @@ func (b *Binary) Evaluate() any {
 				return left / right
 			}
 		}
-		runtimeError("Operand must be a number.")
+		runtimeError("Operands must be numbers.")
 	case LESS:
 		return left.(float64) < right.(float64)
 	case GREATER:
