@@ -3,7 +3,7 @@ package main
 func (l *Literal) Evaluate() any {
 	switch l.token.Type {
 	case NIL:
-		return "nil"
+		return nil
 	case TRUE:
 		return true
 	case FALSE:
@@ -22,7 +22,17 @@ func (g *Grouping) Evaluate() any {
 }
 
 func (u *Unary) Evaluate() any {
-	loxError(u.Op, "not implemented")
+	value := u.Expr.Evaluate()
+	switch u.Op.Type {
+	case MINUS:
+		return -value.(float64)
+	case BANG:
+		if value == nil || value == false {
+			return true
+		}
+		return false
+	}
+	loxError(u.Op, "invalid op")
 	return nil
 }
 

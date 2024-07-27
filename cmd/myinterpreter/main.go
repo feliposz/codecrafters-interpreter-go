@@ -33,7 +33,11 @@ func main() {
 		parser := NewParser(tokens)
 		expr := parser.parse()
 		result := expr.Evaluate()
-		fmt.Println(result)
+		if result == nil {
+			fmt.Println("nil")
+		} else {
+			fmt.Println(result)
+		}
 	default:
 		fmt.Fprintf(os.Stderr, "Unknown command: %s\n", command)
 		os.Exit(1)
