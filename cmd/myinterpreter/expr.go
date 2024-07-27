@@ -55,9 +55,9 @@ type Binary struct {
 	Right Expr
 }
 
-func (u *Binary) String() string {
+func (b *Binary) String() string {
 	op := "?"
-	switch u.Op.Type {
+	switch b.Op.Type {
 	case PLUS:
 		op = "+"
 	case MINUS:
@@ -79,5 +79,5 @@ func (u *Binary) String() string {
 	case BANG_EQUAL:
 		op = "!="
 	}
-	return fmt.Sprintf("(%s %s %s)", op, u.Left.String(), u.Right.String())
+	return fmt.Sprintf("(%s %s %s)", op, b.Left.String(), b.Right.String())
 }

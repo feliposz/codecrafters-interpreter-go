@@ -37,6 +37,13 @@ func (u *Unary) Evaluate() any {
 }
 
 func (b *Binary) Evaluate() any {
+	left, right := b.Left.Evaluate(), b.Right.Evaluate()
+	switch b.Op.Type {
+	case STAR:
+		return left.(float64) * right.(float64)
+	case SLASH:
+		return left.(float64) / right.(float64)
+	}
 	loxError(b.Op, "not implemented")
 	return nil
 }
