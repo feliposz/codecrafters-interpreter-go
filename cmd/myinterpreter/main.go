@@ -26,17 +26,24 @@ func main() {
 	case "parse":
 		tokens := tokenizer(fileContents, false)
 		parser := NewParser(tokens)
-		expr := parser.parse()
+		expr := parser.expression()
 		fmt.Println(expr)
 	case "evaluate":
 		tokens := tokenizer(fileContents, false)
 		parser := NewParser(tokens)
-		expr := parser.parse()
+		expr := parser.expression()
 		result := expr.Evaluate()
 		if result == nil {
 			fmt.Println("nil")
 		} else {
 			fmt.Println(result)
+		}
+	case "run":
+		tokens := tokenizer(fileContents, false)
+		parser := NewParser(tokens)
+		statements := parser.parse()
+		for _, statement := range statements {
+			statement.Run()
 		}
 	default:
 		fmt.Fprintf(os.Stderr, "Unknown command: %s\n", command)

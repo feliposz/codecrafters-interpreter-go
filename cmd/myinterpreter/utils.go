@@ -14,11 +14,11 @@ func isDigit(ch byte) bool {
 }
 
 func loxError(token *Token, msg string) {
-	fmt.Fprint(os.Stderr, msg)
+	fmt.Fprintln(os.Stderr, msg)
 	os.Exit(65)
 }
 
 func runtimeError(msg string) {
-	fmt.Fprint(os.Stderr, msg)
+	fmt.Fprintln(os.Stderr, msg)
 	os.Exit(70)
 }

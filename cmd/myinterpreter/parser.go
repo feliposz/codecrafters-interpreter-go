@@ -52,8 +52,31 @@ func (p *Parser) consume(t TokenType, msg string) {
 	p.advance()
 }
 
-func (p *Parser) parse() Expr {
-	return p.expression()
+func (p *Parser) parse() []Stmt {
+	statements := []Stmt{}
+	for !p.isAtEnd() {
+		statements = append(statements, p.statement())
+	}
+	return statements
+}
+
+func (p *Parser) statement() Stmt {
+	if p.match(PRINT) {
+		return p.printStatement()
+	}
+	return p.expressionStatement()
+}
+
+func (p *Parser) printStatement() Stmt {
+	expr := p.expression()
+	p.consume(SEMICOLON, "Expect ';' after value.")
+	return &PrintStatement{expr}
+}
+
+func (p *Parser) expressionStatement() Stmt {
+	expr := p.expression()
+	p.consume(SEMICOLON, "Expect ';' after expression.")
+	return &ExpressionStatement{expr}
 }
 
 func (p *Parser) expression() Expr {

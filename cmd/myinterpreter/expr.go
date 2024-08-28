@@ -81,3 +81,25 @@ func (b *Binary) String() string {
 	}
 	return fmt.Sprintf("(%s %s %s)", op, b.Left.String(), b.Right.String())
 }
+
+type Stmt interface {
+	Run() any
+}
+
+type PrintStatement struct {
+	Value Expr
+}
+
+type ExpressionStatement struct {
+	Expr Expr
+}
+
+func (s *PrintStatement) Run() any {
+	value := s.Value.Evaluate()
+	fmt.Println(value)
+	return nil
+}
+
+func (s *ExpressionStatement) Run() any {
+	return s.Expr.Evaluate()
+}
