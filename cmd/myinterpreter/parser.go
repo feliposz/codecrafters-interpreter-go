@@ -45,19 +45,38 @@ func (p *Parser) match(types ...TokenType) bool {
 	return false
 }
 
-func (p *Parser) consume(t TokenType, msg string) {
+func (p *Parser) consume(t TokenType, msg string) *Token {
 	if !p.check(t) {
 		loxError(p.peek(), msg)
 	}
-	p.advance()
+	return p.advance()
 }
 
 func (p *Parser) parse() []Stmt {
 	statements := []Stmt{}
 	for !p.isAtEnd() {
-		statements = append(statements, p.statement())
+		statements = append(statements, p.declaration())
 	}
 	return statements
+}
+
+func (p *Parser) declaration() Stmt {
+	if p.match(VAR) {
+		return p.varDeclaration()
+	}
+	return p.statement()
+}
+
+func (p *Parser) varDeclaration() Stmt {
+	name := p.consume(IDENTIFIER, "Expect variable name.")
+
+	var initializer Expr
+	if p.match(EQUAL) {
+		initializer = p.expression()
+	}
+
+	p.consume(SEMICOLON, "Expect ';' after variable declaration.")
+	return &VarStatement{name, initializer}
 }
 
 func (p *Parser) statement() Stmt {
@@ -95,6 +114,9 @@ func (p *Parser) primary() Expr {
 		}
 		p.consume(RIGHT_PAREN, "Expect ')' after expression.")
 		return &Grouping{paren, expr}
+	}
+	if p.match(IDENTIFIER) {
+		return &Variable{p.previous()}
 	}
 	loxError(p.peek(), "Expected expression.")
 	return nil

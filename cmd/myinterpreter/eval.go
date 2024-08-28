@@ -1,5 +1,9 @@
 package main
 
+import "fmt"
+
+var globals = make(map[string]any)
+
 func (l *Literal) Evaluate() any {
 	switch l.token.Type {
 	case NIL:
@@ -127,4 +131,23 @@ func (b *Binary) Evaluate() any {
 	}
 	loxError(b.Op, "not implemented")
 	return nil
+}
+
+func (s *PrintStatement) Run() any {
+	value := s.Value.Evaluate()
+	fmt.Println(value)
+	return nil
+}
+
+func (s *ExpressionStatement) Run() any {
+	return s.Expr.Evaluate()
+}
+
+func (s *VarStatement) Run() any {
+	globals[s.Name.Str] = s.Initializer.Evaluate()
+	return nil
+}
+
+func (v *Variable) Evaluate() any {
+	return globals[v.Name.Str]
 }
