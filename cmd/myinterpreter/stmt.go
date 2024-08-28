@@ -16,3 +16,7 @@ type VarStatement struct {
 	Name        *Token
 	Initializer Expr
 }
+
+type Block struct {
+	Statements []Stmt
+}

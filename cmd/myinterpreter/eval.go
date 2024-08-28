@@ -156,6 +156,13 @@ func (s *VarStatement) Run() any {
 	return nil
 }
 
+func (b *Block) Run() any {
+	for _, statement := range b.Statements {
+		statement.Run()
+	}
+	return nil
+}
+
 func (v *Variable) Evaluate() any {
 	name := v.Name.Str
 	value, found := globals[name]

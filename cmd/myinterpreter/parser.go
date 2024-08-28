@@ -83,6 +83,9 @@ func (p *Parser) statement() Stmt {
 	if p.match(PRINT) {
 		return p.printStatement()
 	}
+	if p.match(LEFT_BRACE) {
+		return p.block()
+	}
 	return p.expressionStatement()
 }
 
@@ -96,6 +99,15 @@ func (p *Parser) expressionStatement() Stmt {
 	expr := p.expression()
 	p.consume(SEMICOLON, "Expect ';' after expression.")
 	return &ExpressionStatement{expr}
+}
+
+func (p *Parser) block() Stmt {
+	statements := []Stmt{}
+	for !p.isAtEnd() && !p.check(RIGHT_BRACE) {
+		statements = append(statements, p.declaration())
+	}
+	p.consume(RIGHT_BRACE, "Expect '}' after block.")
+	return &Block{statements}
 }
 
 func (p *Parser) expression() Expr {
