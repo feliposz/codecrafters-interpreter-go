@@ -135,7 +135,11 @@ func (b *Binary) Evaluate() any {
 
 func (s *PrintStatement) Run() any {
 	value := s.Value.Evaluate()
-	fmt.Println(value)
+	if value == nil {
+		fmt.Println("nil")
+	} else {
+		fmt.Println(value)
+	}
 	return nil
 }
 
@@ -144,7 +148,11 @@ func (s *ExpressionStatement) Run() any {
 }
 
 func (s *VarStatement) Run() any {
-	globals[s.Name.Str] = s.Initializer.Evaluate()
+	var value any
+	if s.Initializer != nil {
+		value = s.Initializer.Evaluate()
+	}
+	globals[s.Name.Str] = value
 	return nil
 }
 
