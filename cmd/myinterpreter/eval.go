@@ -2,8 +2,6 @@ package main
 
 import "fmt"
 
-var globals = make(map[string]any)
-
 func (l *Literal) Evaluate() any {
 	switch l.token.Type {
 	case NIL:
@@ -152,28 +150,26 @@ func (s *VarStatement) Run() any {
 	if s.Initializer != nil {
 		value = s.Initializer.Evaluate()
 	}
-	globals[s.Name.Str] = value
+	env.Set(s.Name, value)
 	return nil
 }
 
 func (b *Block) Run() any {
+	prev := env
+	env = NewEnvironent(prev)
 	for _, statement := range b.Statements {
 		statement.Run()
 	}
+	env = prev
 	return nil
 }
 
 func (v *Variable) Evaluate() any {
-	name := v.Name.Str
-	value, found := globals[name]
-	if !found {
-		runtimeError(v.Name, fmt.Sprintf("Undefined variable '%s'.", name))
-	}
-	return value
+	return env.Get(v.Name)
 }
 
 func (a *Assign) Evaluate() any {
 	value := a.Value.Evaluate()
-	globals[a.Name.Name.Str] = value
+	env.Set(a.Name.Name, value)
 	return value
 }
