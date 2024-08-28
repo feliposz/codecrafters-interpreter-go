@@ -288,7 +288,7 @@ func tokenizer(fileContents []byte, print bool) []Token {
 			}
 		case '"':
 			j := i + 1
-			for j < len(fileContents) && fileContents[j] != '"' && fileContents[j] != '\n' {
+			for j < len(fileContents) && fileContents[j] != '"' {
 				j++
 			}
 			if j < len(fileContents) && fileContents[j] == '"' {
