@@ -164,3 +164,8 @@ func (v *Variable) Evaluate() any {
 	}
 	return value
 }
+
+func (a *Assign) Evaluate() any {
+	globals[a.Name.Name.Str] = a.Value.Evaluate()
+	return nil
+}

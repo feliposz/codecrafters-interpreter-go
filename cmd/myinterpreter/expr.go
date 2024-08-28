@@ -89,3 +89,12 @@ type Variable struct {
 func (v *Variable) String() string {
 	return fmt.Sprintf("(var %s)", v.Name.String())
 }
+
+type Assign struct {
+	Name  *Variable
+	Value Expr
+}
+
+func (a *Assign) String() string {
+	return fmt.Sprintf("(= %s %s)", a.Name.String(), a.Value.String())
+}

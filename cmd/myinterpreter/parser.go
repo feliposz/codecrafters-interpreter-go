@@ -99,7 +99,21 @@ func (p *Parser) expressionStatement() Stmt {
 }
 
 func (p *Parser) expression() Expr {
-	return p.equality()
+	return p.assignment()
+}
+
+func (p *Parser) assignment() Expr {
+	expr := p.equality()
+
+	if p.match(EQUAL) {
+		equals := p.previous()
+		value := p.assignment()
+		if name, ok := expr.(*Variable); ok {
+			return &Assign{name, value}
+		}
+		loxError(equals, "Invalid assignment target.")
+	}
+	return expr
 }
 
 func (p *Parser) primary() Expr {
