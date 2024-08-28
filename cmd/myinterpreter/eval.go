@@ -33,7 +33,7 @@ func (u *Unary) Evaluate() any {
 		case float64:
 			return -value
 		}
-		runtimeError("Operand must be a number.")
+		runtimeError(u.Op, "Operand must be a number.")
 	case BANG:
 		if value == nil || value == false {
 			return true
@@ -60,7 +60,7 @@ func (b *Binary) Evaluate() any {
 				return left + right
 			}
 		}
-		runtimeError("Operands must be two numbers or two strings.")
+		runtimeError(b.Op, "Operands must be two numbers or two strings.")
 	case MINUS:
 		switch left := left.(type) {
 		case float64:
@@ -69,7 +69,7 @@ func (b *Binary) Evaluate() any {
 				return left - right
 			}
 		}
-		runtimeError("Operands must be numbers.")
+		runtimeError(b.Op, "Operands must be numbers.")
 	case STAR:
 		switch left := left.(type) {
 		case float64:
@@ -78,7 +78,7 @@ func (b *Binary) Evaluate() any {
 				return left * right
 			}
 		}
-		runtimeError("Operands must be numbers.")
+		runtimeError(b.Op, "Operands must be numbers.")
 	case SLASH:
 		switch left := left.(type) {
 		case float64:
@@ -87,7 +87,7 @@ func (b *Binary) Evaluate() any {
 				return left / right
 			}
 		}
-		runtimeError("Operands must be numbers.")
+		runtimeError(b.Op, "Operands must be numbers.")
 	case LESS:
 		switch left := left.(type) {
 		case float64:
@@ -96,7 +96,7 @@ func (b *Binary) Evaluate() any {
 				return left < right
 			}
 		}
-		runtimeError("Operands must be numbers.")
+		runtimeError(b.Op, "Operands must be numbers.")
 	case GREATER:
 		switch left := left.(type) {
 		case float64:
@@ -105,7 +105,7 @@ func (b *Binary) Evaluate() any {
 				return left > right
 			}
 		}
-		runtimeError("Operands must be numbers.")
+		runtimeError(b.Op, "Operands must be numbers.")
 	case LESS_EQUAL:
 		switch left := left.(type) {
 		case float64:
@@ -114,7 +114,7 @@ func (b *Binary) Evaluate() any {
 				return left <= right
 			}
 		}
-		runtimeError("Operands must be numbers.")
+		runtimeError(b.Op, "Operands must be numbers.")
 	case GREATER_EQUAL:
 		switch left := left.(type) {
 		case float64:
@@ -123,7 +123,7 @@ func (b *Binary) Evaluate() any {
 				return left >= right
 			}
 		}
-		runtimeError("Operands must be numbers.")
+		runtimeError(b.Op, "Operands must be numbers.")
 	case EQUAL_EQUAL:
 		return left == right
 	case BANG_EQUAL:
@@ -149,5 +149,10 @@ func (s *VarStatement) Run() any {
 }
 
 func (v *Variable) Evaluate() any {
-	return globals[v.Name.Str]
+	name := v.Name.Str
+	value, found := globals[name]
+	if !found {
+		runtimeError(v.Name, fmt.Sprintf("Undefined variable '%s'.", name))
+	}
+	return value
 }

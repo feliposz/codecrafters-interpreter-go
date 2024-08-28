@@ -15,10 +15,12 @@ func isDigit(ch byte) bool {
 
 func loxError(token *Token, msg string) {
 	fmt.Fprintln(os.Stderr, msg)
+	fmt.Fprintf(os.Stderr, "[line %d]\n", token.Line)
 	os.Exit(65)
 }
 
-func runtimeError(msg string) {
+func runtimeError(token *Token, msg string) {
 	fmt.Fprintln(os.Stderr, msg)
+	fmt.Fprintf(os.Stderr, "[line %d]\n", token.Line)
 	os.Exit(70)
 }
