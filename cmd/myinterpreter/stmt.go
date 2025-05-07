@@ -20,3 +20,9 @@ type VarStatement struct {
 type Block struct {
 	Statements []Stmt
 }
+
+type IfStatement struct {
+	Condition  Expr
+	ThenBranch Stmt
+	ElseBranch Stmt
+}

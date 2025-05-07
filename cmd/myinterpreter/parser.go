@@ -80,6 +80,9 @@ func (p *Parser) varDeclaration() Stmt {
 }
 
 func (p *Parser) statement() Stmt {
+	if p.match(IF) {
+		return p.ifStatement()
+	}
 	if p.match(PRINT) {
 		return p.printStatement()
 	}
@@ -87,6 +90,18 @@ func (p *Parser) statement() Stmt {
 		return p.block()
 	}
 	return p.expressionStatement()
+}
+
+func (p *Parser) ifStatement() Stmt {
+	p.consume(LEFT_PAREN, "Expect '(' after 'if'.")
+	condition := p.expression()
+	p.consume(RIGHT_PAREN, "Expect ')' after if condition.")
+	thenBranch := p.statement()
+	var elseBranch Stmt
+	if p.match(ELSE) {
+		elseBranch = p.statement()
+	}
+	return &IfStatement{condition, thenBranch, elseBranch}
 }
 
 func (p *Parser) printStatement() Stmt {

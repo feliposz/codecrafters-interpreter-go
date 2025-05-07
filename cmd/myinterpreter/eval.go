@@ -154,6 +154,27 @@ func (s *VarStatement) Run() any {
 	return nil
 }
 
+func isTruthy(condition any) bool {
+	switch condition := condition.(type) {
+	case bool:
+		return condition
+	case nil:
+		return false
+	default:
+		return true
+	}
+}
+
+func (s *IfStatement) Run() any {
+	condition := s.Condition.Evaluate()
+	if isTruthy(condition) {
+		s.ThenBranch.Run()
+	} else if s.ElseBranch != nil {
+		s.ElseBranch.Run()
+	}
+	return nil
+}
+
 func (b *Block) Run() any {
 	prev := env
 	env = NewEnvironent(prev)
