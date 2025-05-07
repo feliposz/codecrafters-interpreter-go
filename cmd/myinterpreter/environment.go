@@ -16,13 +16,26 @@ func NewEnvironent(enclosing *Environment) *Environment {
 	}
 }
 
-func (e *Environment) Set(variable *Token, value any) {
-	e.Values[variable.String()] = value
+func (e *Environment) Define(variable *Token, value any) {
+	e.Values[variable.Str] = value
+}
+
+func (e *Environment) Assign(variable *Token, value any) {
+	curr := e
+	name := variable.Str
+	for curr != nil {
+		if _, found := curr.Values[name]; found {
+			curr.Values[name] = value
+			return
+		}
+		curr = curr.Enclosing
+	}
+	runtimeError(variable, fmt.Sprintf("Undefined variable '%s'.", name))
 }
 
 func (e *Environment) Get(variable *Token) any {
 	curr := e
-	name := variable.String()
+	name := variable.Str
 	for curr != nil {
 		if value, found := curr.Values[name]; found {
 			return value

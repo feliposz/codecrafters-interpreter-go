@@ -150,7 +150,7 @@ func (s *VarStatement) Run() any {
 	if s.Initializer != nil {
 		value = s.Initializer.Evaluate()
 	}
-	env.Set(s.Name, value)
+	env.Define(s.Name, value)
 	return nil
 }
 
@@ -170,6 +170,6 @@ func (v *Variable) Evaluate() any {
 
 func (a *Assign) Evaluate() any {
 	value := a.Value.Evaluate()
-	env.Set(a.Name.Name, value)
+	env.Assign(a.Name.Name, value)
 	return value
 }
