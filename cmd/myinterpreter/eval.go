@@ -193,6 +193,13 @@ func (s *IfStatement) Run() any {
 	return nil
 }
 
+func (w *WhileStatement) Run() any {
+	for isTruthy(w.Condition.Evaluate()) {
+		w.Body.Run()
+	}
+	return nil
+}
+
 func (b *Block) Run() any {
 	prev := env
 	env = NewEnvironent(prev)

@@ -26,3 +26,8 @@ type IfStatement struct {
 	ThenBranch Stmt
 	ElseBranch Stmt
 }
+
+type WhileStatement struct {
+	Condition Expr
+	Body      Stmt
+}
