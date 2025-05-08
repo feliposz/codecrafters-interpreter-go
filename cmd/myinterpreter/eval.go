@@ -19,6 +19,24 @@ func (l *Literal) Evaluate() any {
 	return nil
 }
 
+func (l *Logical) Evaluate() any {
+	left := l.left.Evaluate()
+	switch l.operator.Type {
+	case OR:
+		if isTruthy(left) {
+			return left
+		}
+	case AND:
+		if !isTruthy(left) {
+			return left
+		}
+	default:
+		loxError(l.operator, "unknow operator")
+		return nil
+	}
+	return l.right.Evaluate()
+}
+
 func (g *Grouping) Evaluate() any {
 	return g.expr.Evaluate()
 }

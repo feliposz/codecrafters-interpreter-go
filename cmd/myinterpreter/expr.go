@@ -98,3 +98,13 @@ type Assign struct {
 func (a *Assign) String() string {
 	return fmt.Sprintf("(= %s %s)", a.Name.String(), a.Value.String())
 }
+
+type Logical struct {
+	left     Expr
+	operator *Token
+	right    Expr
+}
+
+func (l *Logical) String() string {
+	return fmt.Sprintf("(%s %s %s)", l.operator.Str, l.left.String(), l.right.String())
+}
