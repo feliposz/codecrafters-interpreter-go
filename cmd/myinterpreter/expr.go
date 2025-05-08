@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type Expr interface {
 	String() string
@@ -107,4 +110,19 @@ type Logical struct {
 
 func (l *Logical) String() string {
 	return fmt.Sprintf("(%s %s %s)", l.operator.Str, l.left.String(), l.right.String())
+}
+
+type Call struct {
+	callee    Expr
+	paren     *Token
+	arguments []Expr
+}
+
+func (c *Call) String() string {
+	sb := strings.Builder{}
+	for _, arg := range c.arguments {
+		sb.WriteString(" ")
+		sb.WriteString(arg.String())
+	}
+	return fmt.Sprintf("(call %s%s)", c.callee, sb.String())
 }

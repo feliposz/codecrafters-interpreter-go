@@ -219,3 +219,20 @@ func (a *Assign) Evaluate() any {
 	env.Assign(a.Name.Name, value)
 	return value
 }
+
+func (c *Call) Evaluate() any {
+	callee := c.callee.Evaluate()
+	arguments := make([]any, len(c.arguments))
+	for i, arg := range c.arguments {
+		arguments[i] = arg.Evaluate()
+	}
+	switch function := callee.(type) {
+	case LoxCallable:
+		if len(c.arguments) != function.Arity() {
+			runtimeError(c.paren, fmt.Sprintf("Expected %d arguments but got %d.", function.Arity(), len(c.arguments)))
+		}
+		return function.Call(arguments)
+	}
+	runtimeError(c.paren, "Can only call functions and classes.")
+	return nil
+}

@@ -7,7 +7,13 @@ type Environment struct {
 	Values    map[string]any
 }
 
-var env *Environment = NewEnvironent(nil)
+var env *Environment = NewGlobalEnvironment()
+
+func NewGlobalEnvironment() *Environment {
+	global := NewEnvironent(nil)
+	global.Values["clock"] = &FunctionClock{}
+	return global
+}
 
 func NewEnvironent(enclosing *Environment) *Environment {
 	return &Environment{
