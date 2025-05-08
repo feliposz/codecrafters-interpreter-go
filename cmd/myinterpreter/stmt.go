@@ -31,3 +31,9 @@ type WhileStatement struct {
 	Condition Expr
 	Body      Stmt
 }
+
+type Function struct {
+	Name   *Token
+	Params []*Token
+	Body   Stmt
+}

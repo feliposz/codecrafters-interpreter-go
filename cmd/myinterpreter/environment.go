@@ -10,9 +10,9 @@ type Environment struct {
 var env *Environment = NewGlobalEnvironment()
 
 func NewGlobalEnvironment() *Environment {
-	global := NewEnvironent(nil)
-	global.Values["clock"] = &FunctionClock{}
-	return global
+	e := NewEnvironent(nil)
+	e.Values["clock"] = &FunctionClock{}
+	return e
 }
 
 func NewEnvironent(enclosing *Environment) *Environment {

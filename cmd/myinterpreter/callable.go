@@ -1,6 +1,9 @@
 package main
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 type LoxCallable interface {
 	Call(arguments []any) any
@@ -10,14 +13,37 @@ type LoxCallable interface {
 
 type FunctionClock struct{}
 
-func (c *FunctionClock) Arity() int {
+func (f *FunctionClock) Arity() int {
 	return 0
 }
 
-func (c *FunctionClock) String() string {
+func (f *FunctionClock) String() string {
 	return "<native fn>"
 }
 
-func (c *FunctionClock) Call(arguments []any) any {
+func (f *FunctionClock) Call(arguments []any) any {
 	return float64(time.Now().Unix())
+}
+
+type LoxFunction struct {
+	declaration *Function
+}
+
+func (f *LoxFunction) Arity() int {
+	return len(f.declaration.Params)
+}
+
+func (f *LoxFunction) String() string {
+	return fmt.Sprintf("<fn %s>", f.declaration.Name.Str)
+}
+
+func (f *LoxFunction) Call(arguments []any) any {
+	prev := env
+	env = NewEnvironent(env)
+	for i, param := range f.declaration.Params {
+		env.Define(param, arguments[i])
+	}
+	f.declaration.Body.Run()
+	env = prev
+	return nil
 }

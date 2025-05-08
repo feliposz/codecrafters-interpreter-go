@@ -210,6 +210,12 @@ func (b *Block) Run() any {
 	return nil
 }
 
+func (f *Function) Run() any {
+	function := &LoxFunction{f}
+	env.Define(f.Name, function)
+	return nil
+}
+
 func (v *Variable) Evaluate() any {
 	return env.Get(v.Name)
 }

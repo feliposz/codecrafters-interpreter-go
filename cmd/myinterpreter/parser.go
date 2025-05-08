@@ -61,6 +61,9 @@ func (p *Parser) parse() []Stmt {
 }
 
 func (p *Parser) declaration() Stmt {
+	if p.match(FUN) {
+		return p.function("function")
+	}
 	if p.match(VAR) {
 		return p.varDeclaration()
 	}
@@ -162,6 +165,27 @@ func (p *Parser) expressionStatement() Stmt {
 	expr := p.expression()
 	p.consume(SEMICOLON, "Expect ';' after expression.")
 	return &ExpressionStatement{expr}
+}
+
+func (p *Parser) function(kind string) Stmt {
+	name := p.consume(IDENTIFIER, "Expect "+kind+" name.")
+	p.consume(LEFT_PAREN, "Expect '(' after "+kind+" name.")
+	parameters := []*Token{}
+	if !p.check(RIGHT_PAREN) {
+		for {
+			if len(parameters) > 255 {
+				loxError(p.peek(), "Can't have more than 255 parameters.")
+			}
+			parameters = append(parameters, p.consume(IDENTIFIER, "Expect parameter name."))
+			if !p.match(COMMA) {
+				break
+			}
+		}
+	}
+	p.consume(RIGHT_PAREN, "Expect ')' after parameters.")
+	p.consume(LEFT_BRACE, "Expect '{' before "+kind+" body.")
+	block := p.block()
+	return &Function{name, parameters, block}
 }
 
 func (p *Parser) block() Stmt {
