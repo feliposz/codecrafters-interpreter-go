@@ -5,6 +5,7 @@ type FunctionType uint8
 const (
 	FT_NONE FunctionType = iota
 	FT_FUNCTION
+	FT_INITIALIZER
 	FT_METHOD
 )
 
@@ -150,6 +151,9 @@ func (r *ReturnStatement) Resolve() {
 		loxError(r.keyword, "Can't return from top-level code.")
 	}
 	if r.value != nil {
+		if currentFunction == FT_INITIALIZER {
+			loxError(r.keyword, "Can't return a value from an initializer.")
+		}
 		r.value.Resolve()
 	}
 }
@@ -167,7 +171,11 @@ func (c *ClassDeclaration) Resolve() {
 	beginScope()
 	currentScope()["this"] = true
 	for _, method := range c.Methods {
-		resolveFunction(method, FT_METHOD)
+		functionType := FT_METHOD
+		if method.Name.Str == "init" {
+			functionType = FT_INITIALIZER
+		}
+		resolveFunction(method, functionType)
 	}
 	endScope()
 	currentClass = enclosingClass

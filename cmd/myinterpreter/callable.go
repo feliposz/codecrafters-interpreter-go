@@ -47,11 +47,11 @@ func (f *LoxFunction) Call(arguments []any) any {
 	}
 	result := runStatements(f.declaration.Body)
 	env = prev
-	if result, ok := result.(ReturnValue); ok {
-		return result.Value
-	}
 	if f.isInitializer {
 		return f.closure.Values["this"]
+	}
+	if result, ok := result.(ReturnValue); ok {
+		return result.Value
 	}
 	return nil
 }
