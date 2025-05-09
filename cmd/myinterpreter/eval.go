@@ -150,10 +150,16 @@ func (b *Binary) Evaluate() any {
 }
 
 func (s *PrintStatement) Run() any {
-	value := s.Value.Evaluate()
-	if value == nil {
+	switch value := s.Value.Evaluate().(type) {
+	case nil:
 		fmt.Println("nil")
-	} else {
+	case float64:
+		if value == float64(int(value)) {
+			fmt.Printf("%.0f\n", value)
+		} else {
+			fmt.Printf("%g\n", value)
+		}
+	default:
 		fmt.Println(value)
 	}
 	return nil
