@@ -1,5 +1,13 @@
 package main
 
+type FunctionType uint8
+
+const (
+	FT_NONE FunctionType = iota
+	FT_FUNCTION
+)
+
+var currentFunction = FT_NONE
 var scopes []map[string]bool
 var localsResolver = make(map[*Variable]int, 0)
 
@@ -96,10 +104,12 @@ func (a *Assign) Resolve() {
 func (f *FunctionStatement) Resolve() {
 	declare(f.Name)
 	define(f.Name)
-	resolveFunction(f)
+	resolveFunction(f, FT_FUNCTION)
 }
 
-func resolveFunction(f *FunctionStatement) {
+func resolveFunction(f *FunctionStatement, functionType FunctionType) {
+	enclosingFunction := currentFunction
+	currentFunction = functionType
 	beginScope()
 	for _, param := range f.Params {
 		declare(param)
@@ -107,6 +117,7 @@ func resolveFunction(f *FunctionStatement) {
 	}
 	resolveStatements(f.Body)
 	endScope()
+	currentFunction = enclosingFunction
 }
 
 func (s *ExpressionStatement) Resolve() {
@@ -126,6 +137,9 @@ func (s *PrintStatement) Resolve() {
 }
 
 func (r *ReturnStatement) Resolve() {
+	if currentFunction == FT_NONE {
+		loxError(r.keyword, "Can't return from top-level code.")
+	}
 	if r.value != nil {
 		r.value.Resolve()
 	}
