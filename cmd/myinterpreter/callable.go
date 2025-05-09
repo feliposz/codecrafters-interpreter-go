@@ -65,5 +65,13 @@ func (c *LoxClass) String() string {
 }
 
 func (c *LoxClass) Call(arguments []any) any {
-	return nil
+	return &LoxInstance{c}
+}
+
+type LoxInstance struct {
+	class *LoxClass
+}
+
+func (i *LoxInstance) String() string {
+	return i.class.String() + " instance"
 }
