@@ -8,6 +8,7 @@ import (
 type Expr interface {
 	String() string
 	Evaluate() any
+	Resolve()
 }
 
 type Literal struct {

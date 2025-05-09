@@ -238,12 +238,12 @@ type ReturnValue struct {
 }
 
 func (v *Variable) Evaluate() any {
-	return env.Get(v.Name)
+	return lookUpVariable(v)
 }
 
 func (a *Assign) Evaluate() any {
 	value := a.Value.Evaluate()
-	env.Assign(a.Name.Name, value)
+	assignVariable(a.Name, value)
 	return value
 }
 

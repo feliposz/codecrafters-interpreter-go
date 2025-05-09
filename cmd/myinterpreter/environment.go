@@ -7,7 +7,8 @@ type Environment struct {
 	Values    map[string]any
 }
 
-var env *Environment = NewGlobalEnvironment()
+var globals *Environment = NewGlobalEnvironment()
+var env *Environment = globals
 
 func NewGlobalEnvironment() *Environment {
 	e := NewEnvironent(nil)
@@ -50,4 +51,20 @@ func (e *Environment) Get(variable *Token) any {
 	}
 	runtimeError(variable, fmt.Sprintf("Undefined variable '%s'.", name))
 	return nil
+}
+
+func (e *Environment) GetAt(distance int, variable *Token) any {
+	return e.Ancestor(distance).Get(variable)
+}
+
+func (e *Environment) AssignAt(distance int, name *Token, value any) {
+	e.Ancestor(distance).Assign(name, value)
+}
+
+func (e *Environment) Ancestor(distance int) *Environment {
+	result := e
+	for i := 0; i < distance; i++ {
+		result = result.Enclosing
+	}
+	return result
 }

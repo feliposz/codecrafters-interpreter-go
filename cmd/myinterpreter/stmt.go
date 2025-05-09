@@ -2,6 +2,7 @@ package main
 
 type Stmt interface {
 	Run() any
+	Resolve()
 }
 
 type PrintStatement struct {

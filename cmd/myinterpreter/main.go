@@ -42,9 +42,8 @@ func main() {
 		tokens := tokenizer(fileContents, false)
 		parser := NewParser(tokens)
 		statements := parser.parse()
-		for _, statement := range statements {
-			statement.Run()
-		}
+		resolveStatements(statements)
+		runStatements(statements)
 	default:
 		fmt.Fprintf(os.Stderr, "Unknown command: %s\n", command)
 		os.Exit(1)
