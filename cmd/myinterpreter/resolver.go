@@ -5,6 +5,7 @@ type FunctionType uint8
 const (
 	FT_NONE FunctionType = iota
 	FT_FUNCTION
+	FT_METHOD
 )
 
 var currentFunction = FT_NONE
@@ -153,6 +154,9 @@ func (w *WhileStatement) Resolve() {
 func (c *ClassDeclaration) Resolve() {
 	declare(c.Name)
 	define(c.Name)
+	for _, method := range c.Methods {
+		resolveFunction(method, FT_METHOD)
+	}
 }
 
 func (b *Binary) Resolve() {

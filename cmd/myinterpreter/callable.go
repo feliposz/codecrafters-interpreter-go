@@ -53,7 +53,15 @@ func (f *LoxFunction) Call(arguments []any) any {
 }
 
 type LoxClass struct {
-	name string
+	name    string
+	methods map[string]*LoxFunction
+}
+
+func (c *LoxClass) FindMethod(str string) any {
+	if method, ok := c.methods[str]; ok {
+		return method
+	}
+	return nil
 }
 
 func (c *LoxClass) Arity() int {
@@ -80,6 +88,9 @@ func (i *LoxInstance) String() string {
 func (i *LoxInstance) Get(name *Token) any {
 	if value, ok := i.fields[name.Str]; ok {
 		return value
+	}
+	if method := i.class.FindMethod(name.Str); method != nil {
+		return method
 	}
 	runtimeError(name, "Undefined property '"+name.Str+"'.")
 	return nil

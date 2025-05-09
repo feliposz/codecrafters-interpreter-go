@@ -245,7 +245,10 @@ type ReturnValue struct {
 
 func (c *ClassDeclaration) Run() any {
 	env.Define(c.Name, nil)
-	class := &LoxClass{c.Name.Str}
+	class := &LoxClass{c.Name.Str, map[string]*LoxFunction{}}
+	for _, method := range c.Methods {
+		class.methods[method.Name.Str] = &LoxFunction{method, env}
+	}
 	env.Assign(c.Name, class)
 	return nil
 }
