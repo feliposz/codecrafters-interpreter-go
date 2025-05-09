@@ -26,7 +26,7 @@ func (f *FunctionClock) Call(arguments []any) any {
 }
 
 type LoxFunction struct {
-	declaration *Function
+	declaration *FunctionStatement
 }
 
 func (f *LoxFunction) Arity() int {
@@ -43,7 +43,10 @@ func (f *LoxFunction) Call(arguments []any) any {
 	for i, param := range f.declaration.Params {
 		env.Define(param, arguments[i])
 	}
-	f.declaration.Body.Run()
+	result := runStatements(f.declaration.Body)
 	env = prev
+	if result, ok := result.(ReturnValue); ok {
+		return result.Value
+	}
 	return nil
 }

@@ -134,11 +134,14 @@ func (p *Parser) statement() Stmt {
 	if p.match(PRINT) {
 		return p.printStatement()
 	}
+	if p.match(RETURN) {
+		return p.returnStatement()
+	}
 	if p.match(WHILE) {
 		return p.whileStatement()
 	}
 	if p.match(LEFT_BRACE) {
-		return p.block()
+		return &Block{p.block()}
 	}
 	return p.expressionStatement()
 }
@@ -184,17 +187,27 @@ func (p *Parser) function(kind string) Stmt {
 	}
 	p.consume(RIGHT_PAREN, "Expect ')' after parameters.")
 	p.consume(LEFT_BRACE, "Expect '{' before "+kind+" body.")
-	block := p.block()
-	return &Function{name, parameters, block}
+	body := p.block()
+	return &FunctionStatement{name, parameters, body}
 }
 
-func (p *Parser) block() Stmt {
+func (p *Parser) block() []Stmt {
 	statements := []Stmt{}
 	for !p.isAtEnd() && !p.check(RIGHT_BRACE) {
 		statements = append(statements, p.declaration())
 	}
 	p.consume(RIGHT_BRACE, "Expect '}' after block.")
-	return &Block{statements}
+	return statements
+}
+
+func (p *Parser) returnStatement() Stmt {
+	keyword := p.previous()
+	var value Expr
+	if !p.check(SEMICOLON) {
+		value = p.expression()
+	}
+	p.consume(SEMICOLON, "Expect ';' after return value.")
+	return &ReturnStatement{keyword, value}
 }
 
 func (p *Parser) expression() Expr {

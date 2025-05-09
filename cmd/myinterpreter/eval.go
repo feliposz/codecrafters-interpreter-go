@@ -186,16 +186,18 @@ func isTruthy(condition any) bool {
 func (s *IfStatement) Run() any {
 	condition := s.Condition.Evaluate()
 	if isTruthy(condition) {
-		s.ThenBranch.Run()
+		return s.ThenBranch.Run()
 	} else if s.ElseBranch != nil {
-		s.ElseBranch.Run()
+		return s.ElseBranch.Run()
 	}
 	return nil
 }
 
 func (w *WhileStatement) Run() any {
 	for isTruthy(w.Condition.Evaluate()) {
-		w.Body.Run()
+		if returnValue, ok := w.Body.Run().(ReturnValue); ok {
+			return returnValue
+		}
 	}
 	return nil
 }
@@ -203,17 +205,36 @@ func (w *WhileStatement) Run() any {
 func (b *Block) Run() any {
 	prev := env
 	env = NewEnvironent(prev)
-	for _, statement := range b.Statements {
-		statement.Run()
-	}
+	result := runStatements(b.Statements)
 	env = prev
+	return result
+}
+
+func runStatements(statements []Stmt) any {
+	for _, statement := range statements {
+		if returnValue, ok := statement.Run().(ReturnValue); ok {
+			return returnValue
+		}
+	}
 	return nil
 }
 
-func (f *Function) Run() any {
+func (f *FunctionStatement) Run() any {
 	function := &LoxFunction{f}
 	env.Define(f.Name, function)
 	return nil
+}
+
+func (r *ReturnStatement) Run() any {
+	var value any
+	if r.value != nil {
+		value = r.value.Evaluate()
+	}
+	return ReturnValue{value}
+}
+
+type ReturnValue struct {
+	Value any
 }
 
 func (v *Variable) Evaluate() any {
@@ -232,8 +253,7 @@ func (c *Call) Evaluate() any {
 	for i, arg := range c.arguments {
 		arguments[i] = arg.Evaluate()
 	}
-	switch function := callee.(type) {
-	case LoxCallable:
+	if function, ok := callee.(LoxCallable); ok {
 		if len(c.arguments) != function.Arity() {
 			runtimeError(c.paren, fmt.Sprintf("Expected %d arguments but got %d.", function.Arity(), len(c.arguments)))
 		}
