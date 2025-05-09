@@ -27,6 +27,7 @@ func (f *FunctionClock) Call(arguments []any) any {
 
 type LoxFunction struct {
 	declaration *FunctionStatement
+	closure     *Environment
 }
 
 func (f *LoxFunction) Arity() int {
@@ -39,7 +40,7 @@ func (f *LoxFunction) String() string {
 
 func (f *LoxFunction) Call(arguments []any) any {
 	prev := env
-	env = NewEnvironent(env)
+	env = NewEnvironent(f.closure)
 	for i, param := range f.declaration.Params {
 		env.Define(param, arguments[i])
 	}

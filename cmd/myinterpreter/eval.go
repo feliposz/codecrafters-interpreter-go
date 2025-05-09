@@ -220,7 +220,7 @@ func runStatements(statements []Stmt) any {
 }
 
 func (f *FunctionStatement) Run() any {
-	function := &LoxFunction{f}
+	function := &LoxFunction{f, env}
 	env.Define(f.Name, function)
 	return nil
 }
