@@ -174,7 +174,7 @@ func (s *VarStatement) Run() any {
 	if s.Initializer != nil {
 		value = s.Initializer.Evaluate()
 	}
-	env.Define(s.Name, value)
+	env.Define(s.Name.Str, value)
 	return nil
 }
 
@@ -227,7 +227,7 @@ func runStatements(statements []Stmt) any {
 
 func (f *FunctionDeclaration) Run() any {
 	function := &LoxFunction{f, env}
-	env.Define(f.Name, function)
+	env.Define(f.Name.Str, function)
 	return nil
 }
 
@@ -244,7 +244,7 @@ type ReturnValue struct {
 }
 
 func (c *ClassDeclaration) Run() any {
-	env.Define(c.Name, nil)
+	env.Define(c.Name.Str, nil)
 	class := &LoxClass{c.Name.Str, map[string]*LoxFunction{}}
 	for _, method := range c.Methods {
 		class.methods[method.Name.Str] = &LoxFunction{method, env}
@@ -254,7 +254,7 @@ func (c *ClassDeclaration) Run() any {
 }
 
 func (v *Variable) Evaluate() any {
-	return lookUpVariable(v)
+	return lookUpVariable(v, v.Name)
 }
 
 func (a *Assign) Evaluate() any {
@@ -297,4 +297,8 @@ func (s *Set) Evaluate() any {
 	}
 	runtimeError(s.name, "Only instances have fields.")
 	return nil
+}
+
+func (t *This) Evaluate() any {
+	return lookUpVariable(t, t.keyword)
 }

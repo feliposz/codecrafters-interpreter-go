@@ -23,8 +23,8 @@ func NewEnvironent(enclosing *Environment) *Environment {
 	}
 }
 
-func (e *Environment) Define(variable *Token, value any) {
-	e.Values[variable.Str] = value
+func (e *Environment) Define(name string, value any) {
+	e.Values[name] = value
 }
 
 func (e *Environment) Assign(variable *Token, value any) {

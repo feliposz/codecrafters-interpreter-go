@@ -276,6 +276,9 @@ func (p *Parser) primary() Expr {
 		p.consume(RIGHT_PAREN, "Expect ')' after expression.")
 		return &Grouping{paren, expr}
 	}
+	if p.match(THIS) {
+		return &This{p.previous()}
+	}
 	if p.match(IDENTIFIER) {
 		return &Variable{p.previous()}
 	}

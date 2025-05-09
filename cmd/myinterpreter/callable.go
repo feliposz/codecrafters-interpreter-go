@@ -42,7 +42,7 @@ func (f *LoxFunction) Call(arguments []any) any {
 	prev := env
 	env = NewEnvironent(f.closure)
 	for i, param := range f.declaration.Params {
-		env.Define(param, arguments[i])
+		env.Define(param.Str, arguments[i])
 	}
 	result := runStatements(f.declaration.Body)
 	env = prev
@@ -50,6 +50,12 @@ func (f *LoxFunction) Call(arguments []any) any {
 		return result.Value
 	}
 	return nil
+}
+
+func (f *LoxFunction) Bind(instance *LoxInstance) *LoxFunction {
+	instanceEnv := NewEnvironent(f.closure)
+	instanceEnv.Define("this", instance)
+	return &LoxFunction{f.declaration, instanceEnv}
 }
 
 type LoxClass struct {
@@ -89,8 +95,8 @@ func (i *LoxInstance) Get(name *Token) any {
 	if value, ok := i.fields[name.Str]; ok {
 		return value
 	}
-	if method := i.class.FindMethod(name.Str); method != nil {
-		return method
+	if method := i.class.FindMethod(name.Str).(*LoxFunction); method != nil {
+		return method.Bind(i)
 	}
 	runtimeError(name, "Undefined property '"+name.Str+"'.")
 	return nil

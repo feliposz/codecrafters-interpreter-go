@@ -146,3 +146,11 @@ type Set struct {
 func (s *Set) String() string {
 	return fmt.Sprintf("(get %s %s)", s.object, s.name)
 }
+
+type This struct {
+	keyword *Token
+}
+
+func (t *This) String() string {
+	return "(this)"
+}

@@ -10,7 +10,7 @@ const (
 
 var currentFunction = FT_NONE
 var scopes []map[string]bool
-var localsResolver = make(map[*Variable]int, 0)
+var localsResolver = make(map[Expr]int, 0)
 
 func beginScope() {
 	scopes = append(scopes, make(map[string]bool))
@@ -42,7 +42,7 @@ func define(token *Token) {
 	}
 }
 
-func resolveLocalVariable(variable *Variable, token *Token) {
+func resolveLocalVariable(variable Expr, token *Token) {
 	for i := len(scopes) - 1; i >= 0; i-- {
 		if _, found := scopes[i][token.Str]; found {
 			depth := len(scopes) - 1 - i
@@ -52,11 +52,11 @@ func resolveLocalVariable(variable *Variable, token *Token) {
 	}
 }
 
-func lookUpVariable(variable *Variable) any {
+func lookUpVariable(variable Expr, token *Token) any {
 	if distance, found := localsResolver[variable]; found {
-		return env.GetAt(distance, variable.Name)
+		return env.GetAt(distance, token)
 	} else {
-		return globals.Get(variable.Name)
+		return globals.Get(token)
 	}
 }
 
@@ -154,9 +154,12 @@ func (w *WhileStatement) Resolve() {
 func (c *ClassDeclaration) Resolve() {
 	declare(c.Name)
 	define(c.Name)
+	beginScope()
+	currentScope()["this"] = true
 	for _, method := range c.Methods {
 		resolveFunction(method, FT_METHOD)
 	}
+	endScope()
 }
 
 func (b *Binary) Resolve() {
@@ -195,4 +198,8 @@ func (l *Logical) Resolve() {
 
 func (u *Unary) Resolve() {
 	u.Expr.Resolve()
+}
+
+func (t *This) Resolve() {
+	resolveLocalVariable(t, t.keyword)
 }
