@@ -8,7 +8,15 @@ const (
 	FT_METHOD
 )
 
+type ClassType uint8
+
+const (
+	CT_NONE ClassType = iota
+	CT_CLASS
+)
+
 var currentFunction = FT_NONE
+var currentClass = CT_NONE
 var scopes []map[string]bool
 var localsResolver = make(map[Expr]int, 0)
 
@@ -152,6 +160,8 @@ func (w *WhileStatement) Resolve() {
 }
 
 func (c *ClassDeclaration) Resolve() {
+	enclosingClass := currentClass
+	currentClass = CT_CLASS
 	declare(c.Name)
 	define(c.Name)
 	beginScope()
@@ -160,6 +170,7 @@ func (c *ClassDeclaration) Resolve() {
 		resolveFunction(method, FT_METHOD)
 	}
 	endScope()
+	currentClass = enclosingClass
 }
 
 func (b *Binary) Resolve() {
@@ -201,5 +212,9 @@ func (u *Unary) Resolve() {
 }
 
 func (t *This) Resolve() {
+	if currentClass == CT_NONE {
+		loxError(t.keyword, "Can't use 'this' outside of a class.")
+		return
+	}
 	resolveLocalVariable(t, t.keyword)
 }

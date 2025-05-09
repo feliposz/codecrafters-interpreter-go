@@ -95,7 +95,7 @@ func (i *LoxInstance) Get(name *Token) any {
 	if value, ok := i.fields[name.Str]; ok {
 		return value
 	}
-	if method := i.class.FindMethod(name.Str).(*LoxFunction); method != nil {
+	if method, ok := i.class.FindMethod(name.Str).(*LoxFunction); ok {
 		return method.Bind(i)
 	}
 	runtimeError(name, "Undefined property '"+name.Str+"'.")
