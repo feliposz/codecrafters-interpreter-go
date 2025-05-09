@@ -275,3 +275,23 @@ func (c *Call) Evaluate() any {
 	runtimeError(c.paren, "Can only call functions and classes.")
 	return nil
 }
+
+func (g *Get) Evaluate() any {
+	object := g.object.Evaluate()
+	if object, ok := object.(*LoxInstance); ok {
+		return object.Get(g.name)
+	}
+	runtimeError(g.name, "Only instances have properties.")
+	return nil
+}
+
+func (s *Set) Evaluate() any {
+	object := s.object.Evaluate()
+	if object, ok := object.(*LoxInstance); ok {
+		value := s.value.Evaluate()
+		object.Set(s.name, value)
+		return nil
+	}
+	runtimeError(s.name, "Only instances have fields.")
+	return nil
+}

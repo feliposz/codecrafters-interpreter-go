@@ -127,3 +127,22 @@ func (c *Call) String() string {
 	}
 	return fmt.Sprintf("(call %s%s)", c.callee, sb.String())
 }
+
+type Get struct {
+	object Expr
+	name   *Token
+}
+
+func (g *Get) String() string {
+	return fmt.Sprintf("(get %s %s)", g.object, g.name)
+}
+
+type Set struct {
+	object Expr
+	name   *Token
+	value  Expr
+}
+
+func (s *Set) String() string {
+	return fmt.Sprintf("(get %s %s)", s.object, s.name)
+}

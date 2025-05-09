@@ -65,13 +65,26 @@ func (c *LoxClass) String() string {
 }
 
 func (c *LoxClass) Call(arguments []any) any {
-	return &LoxInstance{c}
+	return &LoxInstance{c, make(map[string]any)}
 }
 
 type LoxInstance struct {
-	class *LoxClass
+	class  *LoxClass
+	fields map[string]any
 }
 
 func (i *LoxInstance) String() string {
 	return i.class.String() + " instance"
+}
+
+func (i *LoxInstance) Get(name *Token) any {
+	if value, ok := i.fields[name.Str]; ok {
+		return value
+	}
+	runtimeError(name, "Undefined property '"+name.Str+"'.")
+	return nil
+}
+
+func (i *LoxInstance) Set(name *Token, value any) {
+	i.fields[name.Str] = value
 }

@@ -167,6 +167,15 @@ func (c *Call) Resolve() {
 	}
 }
 
+func (g *Get) Resolve() {
+	g.object.Resolve()
+}
+
+func (s *Set) Resolve() {
+	s.value.Resolve()
+	s.object.Resolve()
+}
+
 func (g *Grouping) Resolve() {
 	g.expr.Resolve()
 }

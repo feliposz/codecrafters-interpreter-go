@@ -235,6 +235,8 @@ func (p *Parser) assignment() Expr {
 		value := p.assignment()
 		if name, ok := expr.(*Variable); ok {
 			return &Assign{name, value}
+		} else if get, ok := expr.(*Get); ok {
+			return &Set{get.object, get.name, value}
 		}
 		loxError(equals, "Invalid assignment target.")
 	}
@@ -295,6 +297,9 @@ func (p *Parser) call() Expr {
 	for {
 		if p.match(LEFT_PAREN) {
 			expr = p.finishCall(expr)
+		} else if p.match(DOT) {
+			name := p.consume(IDENTIFIER, "Expect property name after '.'.")
+			expr = &Get{expr, name}
 		} else {
 			break
 		}
