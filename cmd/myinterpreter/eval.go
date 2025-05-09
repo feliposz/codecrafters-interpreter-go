@@ -226,7 +226,7 @@ func runStatements(statements []Stmt) any {
 }
 
 func (f *FunctionDeclaration) Run() any {
-	function := &LoxFunction{f, env}
+	function := &LoxFunction{f, env, false}
 	env.Define(f.Name.Str, function)
 	return nil
 }
@@ -247,7 +247,8 @@ func (c *ClassDeclaration) Run() any {
 	env.Define(c.Name.Str, nil)
 	class := &LoxClass{c.Name.Str, map[string]*LoxFunction{}}
 	for _, method := range c.Methods {
-		class.methods[method.Name.Str] = &LoxFunction{method, env}
+		isInitializer := method.Name.Str == "init"
+		class.methods[method.Name.Str] = &LoxFunction{method, env, isInitializer}
 	}
 	env.Assign(c.Name, class)
 	return nil
