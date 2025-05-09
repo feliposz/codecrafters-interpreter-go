@@ -26,7 +26,7 @@ func (f *FunctionClock) Call(arguments []any) any {
 }
 
 type LoxFunction struct {
-	declaration *FunctionStatement
+	declaration *FunctionDeclaration
 	closure     *Environment
 }
 
@@ -49,5 +49,21 @@ func (f *LoxFunction) Call(arguments []any) any {
 	if result, ok := result.(ReturnValue); ok {
 		return result.Value
 	}
+	return nil
+}
+
+type LoxClass struct {
+	name string
+}
+
+func (c *LoxClass) Arity() int {
+	return 0
+}
+
+func (c *LoxClass) String() string {
+	return c.name
+}
+
+func (c *LoxClass) Call(arguments []any) any {
 	return nil
 }

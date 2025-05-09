@@ -61,6 +61,9 @@ func (p *Parser) parse() []Stmt {
 }
 
 func (p *Parser) declaration() Stmt {
+	if p.match(CLASS) {
+		return p.classDeclaration()
+	}
 	if p.match(FUN) {
 		return p.function("function")
 	}
@@ -68,6 +71,17 @@ func (p *Parser) declaration() Stmt {
 		return p.varDeclaration()
 	}
 	return p.statement()
+}
+
+func (p *Parser) classDeclaration() Stmt {
+	name := p.consume(IDENTIFIER, "Expect class name.")
+	p.consume(LEFT_BRACE, "Expect '{' before class body.")
+	var methods []*FunctionDeclaration
+	for !p.check(RIGHT_BRACE) && !p.isAtEnd() {
+		methods = append(methods, p.function("method"))
+	}
+	p.consume(RIGHT_BRACE, "Expect '}' after class body.")
+	return &ClassDeclaration{name, methods}
 }
 
 func (p *Parser) varDeclaration() Stmt {
@@ -170,7 +184,7 @@ func (p *Parser) expressionStatement() Stmt {
 	return &ExpressionStatement{expr}
 }
 
-func (p *Parser) function(kind string) Stmt {
+func (p *Parser) function(kind string) *FunctionDeclaration {
 	name := p.consume(IDENTIFIER, "Expect "+kind+" name.")
 	p.consume(LEFT_PAREN, "Expect '(' after "+kind+" name.")
 	parameters := []*Token{}
@@ -188,7 +202,7 @@ func (p *Parser) function(kind string) Stmt {
 	p.consume(RIGHT_PAREN, "Expect ')' after parameters.")
 	p.consume(LEFT_BRACE, "Expect '{' before "+kind+" body.")
 	body := p.block()
-	return &FunctionStatement{name, parameters, body}
+	return &FunctionDeclaration{name, parameters, body}
 }
 
 func (p *Parser) block() []Stmt {

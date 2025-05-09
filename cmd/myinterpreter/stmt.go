@@ -33,7 +33,7 @@ type WhileStatement struct {
 	Body      Stmt
 }
 
-type FunctionStatement struct {
+type FunctionDeclaration struct {
 	Name   *Token
 	Params []*Token
 	Body   []Stmt
@@ -42,4 +42,9 @@ type FunctionStatement struct {
 type ReturnStatement struct {
 	keyword *Token
 	value   Expr
+}
+
+type ClassDeclaration struct {
+	Name    *Token
+	Methods []*FunctionDeclaration
 }

@@ -101,13 +101,13 @@ func (a *Assign) Resolve() {
 	resolveLocalVariable(a.Name, a.Name.Name)
 }
 
-func (f *FunctionStatement) Resolve() {
+func (f *FunctionDeclaration) Resolve() {
 	declare(f.Name)
 	define(f.Name)
 	resolveFunction(f, FT_FUNCTION)
 }
 
-func resolveFunction(f *FunctionStatement, functionType FunctionType) {
+func resolveFunction(f *FunctionDeclaration, functionType FunctionType) {
 	enclosingFunction := currentFunction
 	currentFunction = functionType
 	beginScope()
@@ -148,6 +148,11 @@ func (r *ReturnStatement) Resolve() {
 func (w *WhileStatement) Resolve() {
 	w.Condition.Resolve()
 	w.Body.Resolve()
+}
+
+func (c *ClassDeclaration) Resolve() {
+	declare(c.Name)
+	define(c.Name)
 }
 
 func (b *Binary) Resolve() {

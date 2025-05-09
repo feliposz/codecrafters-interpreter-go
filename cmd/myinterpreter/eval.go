@@ -225,7 +225,7 @@ func runStatements(statements []Stmt) any {
 	return nil
 }
 
-func (f *FunctionStatement) Run() any {
+func (f *FunctionDeclaration) Run() any {
 	function := &LoxFunction{f, env}
 	env.Define(f.Name, function)
 	return nil
@@ -241,6 +241,13 @@ func (r *ReturnStatement) Run() any {
 
 type ReturnValue struct {
 	Value any
+}
+
+func (c *ClassDeclaration) Run() any {
+	env.Define(c.Name, nil)
+	class := &LoxClass{c.Name.Str}
+	env.Assign(c.Name, class)
+	return nil
 }
 
 func (v *Variable) Evaluate() any {
