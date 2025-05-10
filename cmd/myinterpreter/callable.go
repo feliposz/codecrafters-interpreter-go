@@ -63,8 +63,9 @@ func (f *LoxFunction) Bind(instance *LoxInstance) *LoxFunction {
 }
 
 type LoxClass struct {
-	name    string
-	methods map[string]*LoxFunction
+	name       string
+	superclass *LoxClass
+	methods    map[string]*LoxFunction
 }
 
 func (c *LoxClass) FindMethod(str string) *LoxFunction {

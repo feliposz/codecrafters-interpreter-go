@@ -45,6 +45,7 @@ type ReturnStatement struct {
 }
 
 type ClassDeclaration struct {
-	Name    *Token
-	Methods []*FunctionDeclaration
+	Name       *Token
+	Superclass *Variable
+	Methods    []*FunctionDeclaration
 }

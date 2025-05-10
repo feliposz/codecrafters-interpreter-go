@@ -244,8 +244,17 @@ type ReturnValue struct {
 }
 
 func (c *ClassDeclaration) Run() any {
+	var superclass *LoxClass
+	if c.Superclass != nil {
+		var ok bool
+		superclass, ok = c.Superclass.Evaluate().(*LoxClass)
+		if !ok {
+			runtimeError(c.Name, "Superclass must be a class.")
+			return nil
+		}
+	}
 	env.Define(c.Name.Str, nil)
-	class := &LoxClass{c.Name.Str, map[string]*LoxFunction{}}
+	class := &LoxClass{c.Name.Str, superclass, map[string]*LoxFunction{}}
 	for _, method := range c.Methods {
 		isInitializer := method.Name.Str == "init"
 		class.methods[method.Name.Str] = &LoxFunction{method, env, isInitializer}

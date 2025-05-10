@@ -168,6 +168,13 @@ func (c *ClassDeclaration) Resolve() {
 	currentClass = CT_CLASS
 	declare(c.Name)
 	define(c.Name)
+	if c.Superclass != nil {
+		if c.Name.Str == c.Superclass.Name.Str {
+			loxError(c.Superclass.Name, "A class can't inherit from itself.")
+			return
+		}
+		c.Superclass.Resolve()
+	}
 	beginScope()
 	currentScope()["this"] = true
 	for _, method := range c.Methods {
