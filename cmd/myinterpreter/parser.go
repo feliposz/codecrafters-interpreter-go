@@ -272,6 +272,12 @@ func (p *Parser) primary() Expr {
 	if p.match(NIL, TRUE, FALSE, NUMBER, STRING) {
 		return &Literal{p.previous()}
 	}
+	if p.match(SUPER) {
+		keyword := p.previous()
+		p.consume(DOT, "Expect '.' after 'super'.")
+		method := p.consume(IDENTIFIER, "Expect superclass method name.")
+		return &Super{keyword, method}
+	}
 	if p.match(LEFT_PAREN) {
 		paren := p.previous()
 		expr := p.expression()

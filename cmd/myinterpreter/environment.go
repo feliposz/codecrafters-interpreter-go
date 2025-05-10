@@ -57,6 +57,22 @@ func (e *Environment) GetAt(distance int, variable *Token) any {
 	return e.Ancestor(distance).Get(variable)
 }
 
+func (e *Environment) GetByName(name string) any {
+	curr := e
+	for curr != nil {
+		if value, found := curr.Values[name]; found {
+			return value
+		}
+		curr = curr.Enclosing
+	}
+	runtimeError(nil, fmt.Sprintf("Undefined variable '%s'.", name))
+	return nil
+}
+
+func (e *Environment) GetByNameAt(distance int, name string) any {
+	return e.Ancestor(distance).GetByName(name)
+}
+
 func (e *Environment) AssignAt(distance int, name *Token, value any) {
 	e.Ancestor(distance).Assign(name, value)
 }

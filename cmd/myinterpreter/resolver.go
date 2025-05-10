@@ -175,6 +175,10 @@ func (c *ClassDeclaration) Resolve() {
 		}
 		c.Superclass.Resolve()
 	}
+	if c.Superclass != nil {
+		beginScope()
+		currentScope()["super"] = true
+	}
 	beginScope()
 	currentScope()["this"] = true
 	for _, method := range c.Methods {
@@ -185,6 +189,9 @@ func (c *ClassDeclaration) Resolve() {
 		resolveFunction(method, functionType)
 	}
 	endScope()
+	if c.Superclass != nil {
+		endScope()
+	}
 	currentClass = enclosingClass
 }
 
@@ -232,4 +239,8 @@ func (t *This) Resolve() {
 		return
 	}
 	resolveLocalVariable(t, t.keyword)
+}
+
+func (s *Super) Resolve() {
+	resolveLocalVariable(s, s.keyword)
 }

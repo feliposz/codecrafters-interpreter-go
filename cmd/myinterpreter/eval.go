@@ -254,10 +254,17 @@ func (c *ClassDeclaration) Run() any {
 		}
 	}
 	env.Define(c.Name.Str, nil)
+	if c.Superclass != nil {
+		env = NewEnvironent(env)
+		env.Define("super", superclass)
+	}
 	class := &LoxClass{c.Name.Str, superclass, map[string]*LoxFunction{}}
 	for _, method := range c.Methods {
 		isInitializer := method.Name.Str == "init"
 		class.methods[method.Name.Str] = &LoxFunction{method, env, isInitializer}
+	}
+	if c.Superclass != nil {
+		env = env.Enclosing
 	}
 	env.Assign(c.Name, class)
 	return nil
@@ -311,4 +318,16 @@ func (s *Set) Evaluate() any {
 
 func (t *This) Evaluate() any {
 	return lookUpVariable(t, t.keyword)
+}
+
+func (s *Super) Evaluate() any {
+	distance := localsResolver[s]
+	superclass := env.GetAt(distance, s.keyword).(*LoxClass)
+	object := env.GetByNameAt(distance-1, "this").(*LoxInstance)
+	method := superclass.FindMethod(s.method.Str)
+	if method != nil {
+		return method.Bind(object)
+	}
+	runtimeError(s.method, "Undefined property '"+s.method.Str+"'.")
+	return nil
 }

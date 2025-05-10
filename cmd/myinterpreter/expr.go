@@ -154,3 +154,12 @@ type This struct {
 func (t *This) String() string {
 	return "(this)"
 }
+
+type Super struct {
+	keyword *Token
+	method  *Token
+}
+
+func (s *Super) String() string {
+	return fmt.Sprintf("(super %s)", s.method.Str)
+}
