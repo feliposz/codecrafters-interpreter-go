@@ -14,6 +14,7 @@ type ClassType uint8
 const (
 	CT_NONE ClassType = iota
 	CT_CLASS
+	CT_SUBCLASS
 )
 
 var currentFunction = FT_NONE
@@ -169,6 +170,7 @@ func (c *ClassDeclaration) Resolve() {
 	declare(c.Name)
 	define(c.Name)
 	if c.Superclass != nil {
+		currentClass = CT_SUBCLASS
 		if c.Name.Str == c.Superclass.Name.Str {
 			loxError(c.Superclass.Name, "A class can't inherit from itself.")
 			return
@@ -242,5 +244,13 @@ func (t *This) Resolve() {
 }
 
 func (s *Super) Resolve() {
+	if currentClass == CT_NONE {
+		loxError(s.keyword, "Can't use 'super' outside of a class.")
+		return
+	}
+	if currentClass != CT_SUBCLASS {
+		loxError(s.keyword, "Can't use 'super' in a class with no superclass.")
+		return
+	}
 	resolveLocalVariable(s, s.keyword)
 }
